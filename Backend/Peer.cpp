@@ -1,3 +1,4 @@
+#include "Peer.h"
 Peer::Peer(char *_myHostname, int _myPort, char *_shostname, int _sport) : Server(_myHostname, _myPort)
 {
     brokerIP = _shostname;
@@ -41,7 +42,7 @@ void Peer::listenerRun()
     }
 }
 
-int Peer::login(string username, string password){
+int Peer::login(string username, string password)
 {
     this->udpSocket->initializeClient(brokerIP, brokerPort);
     string args = username + separator + password;
@@ -86,7 +87,7 @@ int Peer::login(string username, string password){
     return result;
 }
 
-int Peer::signup(string username, string password){
+int Peer::signup(string username, string password)
 {
     this->udpSocket->initializeClient(brokerIP, brokerPort);
     string args = username + separator + password;
@@ -531,7 +532,7 @@ void Peer::uploadLocalImage(string path)
     appendFileAndCache(MyImages_db, myImageTitles, imageName);
 }
 
-void cacheDB(string path, set<string> &cache)
+void Peer::cacheDB(string path, set<string> &cache)
 {
     ifstream in(path);
     string entry;
@@ -541,7 +542,7 @@ void cacheDB(string path, set<string> &cache)
     }
 }
 
-void appendFileAndCache(string path, set<string> &cache, string entry)
+void Peer::appendFileAndCache(string path, set<string> &cache, string entry)
 {
     if (cache.find(entry) == cache.end())
     {

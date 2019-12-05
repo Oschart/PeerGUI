@@ -8,7 +8,7 @@
 #include <set>
 #include "Message.h"
 #include "Server.h"
-#include "ParseUtil.cpp"
+//#include "ParseUtil.cpp"
 
 #define BROKER_IP "10.7.57.2"
 #define BROKER_PORT 2468
@@ -95,6 +95,9 @@ private:
     set<string> myImageTitles;
     set<string> grantedImagesTitles;
     set<string> previewsTitles;
+
+    void cacheDB(string path, set<string> &cache);
+    void appendFileAndCache(string path, set<string> &cache, string entry);
 };
 //#include "Peer.cpp"
 #endif // PEER_H
