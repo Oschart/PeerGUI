@@ -1,5 +1,3 @@
-#include "Peer.h"
-
 Peer::Peer(char *_myHostname, int _myPort, char *_shostname, int _sport) : Server(_myHostname, _myPort)
 {
     brokerIP = _shostname;
@@ -12,7 +10,7 @@ Peer::Peer(char *_myHostname, int _myPort, char *_shostname, int _sport) : Serve
     this->sessionToken = "9";
     rpcID = 10;
 
-//    createFolder("./previews");
+    //    createFolder("./previews");
     argCount[REQUEST_IMAGE] = 3;
     argCount[REQUEST_QUOTA] = 3;
 }
@@ -20,6 +18,7 @@ Peer::Peer(char *_myHostname, int _myPort, char *_shostname, int _sport) : Serve
 bool Peer::execute(Message *_message)
 {
     int rpc_id = _message->getRPCId();
+
     condition_variable cv;
     mutex mx;
     unique_lock<mutex> lck(mx);
@@ -34,7 +33,6 @@ bool Peer::execute(Message *_message)
     return trials > 0;
 }
 
-
 void Peer::listenerRun()
 {
     while (this->listenerActive)
@@ -43,9 +41,8 @@ void Peer::listenerRun()
     }
 }
 
-
-
 int Peer::login(string username, string password){
+{
     this->udpSocket->initializeClient(brokerIP, brokerPort);
     string args = username + separator + password;
     Message *toBeSent = new Message(LOGIN, stringToCharPtr(args), args.length(), (this->rpcID)++);
@@ -70,6 +67,11 @@ int Peer::login(string username, string password){
             createFolder(GrantedImages);
             createFolder(MyImages);
             createFolder(PREVIEWS);
+
+            cacheDB(MyImages_db, myImageTitles);
+            cacheDB(GrantedImages_db, grantedImagesTitles);
+            cacheDB(Previews_db, previewsTitles);
+
             result = 1;
         }
 
@@ -85,6 +87,7 @@ int Peer::login(string username, string password){
 }
 
 int Peer::signup(string username, string password){
+{
     this->udpSocket->initializeClient(brokerIP, brokerPort);
     string args = username + separator + password;
     Message *toBeSent = new Message(REGISTER, stringToCharPtr(args), args.length(), (this->rpcID)++);
@@ -98,9 +101,9 @@ int Peer::signup(string username, string password){
         this->rpcToMsg.erase(rpc_id);
         string content = string((char *)received->getMessage(), received->getMessageSize());
         if (content == "0")
-        {cout << "Registration failed, invalid username\n"; result = 0;}
+            {cout << "Registration failed, invalid username\n"; result = 0;}
         else if (content == "1")
-        {cout << "Registration succeeded\n"; result = 1;}
+            {cout << "Registration succeeded\n"; result = 1;}
         else
             cout << "Invalid reply content!: " << content << endl;
 
@@ -116,7 +119,8 @@ int Peer::signup(string username, string password){
     return result;
 }
 
-pair<IP, Port> Peer::getAddress(string otherPeer){
+pair<IP, Port> Peer::getAddress(string otherPeer)
+{
     this->udpSocket->initializeClient(brokerIP, brokerPort);
     string args = this->sessionToken + separator + otherPeer;
     Message *toBeSent = new Message(GET_IP, stringToCharPtr(args), args.length(), (this->rpcID)++);
@@ -133,7 +137,8 @@ pair<IP, Port> Peer::getAddress(string otherPeer){
         {
             cout << "Get IP operation failed\n";
         }
-        else{
+        else
+        {
             vector<string> args = extractArgs(content);
             if (args.size() == 2)
             {
@@ -155,7 +160,8 @@ pair<IP, Port> Peer::getAddress(string otherPeer){
     return make_pair(0U, 0U);
 }
 
-void Peer::getPreviews(){
+void Peer::getPreviews()
+{
     this->udpSocket->initializeClient(brokerIP, brokerPort);
     string args = this->sessionToken;
     Message *toBeSent = new Message(GET_PREVIEW_FEED, stringToCharPtr(args), args.length(), (this->rpcID)++);
@@ -167,17 +173,19 @@ void Peer::getPreviews(){
         this->rpcToMsg.erase(rpc_id);
         cout << "PREVIEWS RECEIVED\n";
         vector<uint8_t> flatArgs = Image::charPtrToVector((char *)received->getMessage(), received->getMessageSize());
-        
+
         vector<Image> previews = extractImages(flatArgs);
 
-        for(int i = 0; i < previews.size(); i++){
+        for (int i = 0; i < previews.size(); i++)
+        {
             string imageTitle = previews[i].getTitle();
             //imageTitle.pop_back();
             string path = PREVIEWS + string("/") + imageTitle;
             this->imageToPeer[imageTitle] = previews[i].getOwner();
             Image::writeImage(path, previews[i].getContent());
 
-            saveDBRecord(MyData, imageTitle, previews[i].getOwner());
+            string storedImageTitle = imageTitle + string("_") + previews[i].getOwner();
+            appendFileAndCache(Previews_db, previewsTitles, storedImageTitle);
         }
 
         delete received;
@@ -189,10 +197,11 @@ void Peer::getPreviews(){
     delete toBeSent;
 }
 
-void Peer::getUserPreviews(string otherpeer){
-    
+void Peer::getUserPreviews(string otherpeer)
+{
+
     this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
-    
+
     string args = this->sessionToken + separator + otherpeer;
     Message *toBeSent = new Message(GET_USER_PREVIEW, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
@@ -203,10 +212,11 @@ void Peer::getUserPreviews(string otherpeer){
         this->rpcToMsg.erase(rpc_id);
         cout << "USER PREVIEWS RECEIVED\n";
         vector<uint8_t> flatArgs = Image::charPtrToVector((char *)received->getMessage(), received->getMessageSize());
-        
+
         vector<Image> previews = extractImages(flatArgs);
 
-        for(int i = 0; i < previews.size(); i++){
+        for (int i = 0; i < previews.size(); i++)
+        {
             string imageTitle = previews[i].getTitle();
             //imageTitle.pop_back();
             string path = PREVIEWS + string("/") + imageTitle;
@@ -222,15 +232,17 @@ void Peer::getUserPreviews(string otherpeer){
     }
 }
 
-void Peer::getUserTitles(string otherpeer){
+void Peer::getUserTitles(string otherpeer)
+{
     pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
-    if(peerToAddress == make_pair(0U, 0U)){
+    if (peerToAddress == make_pair(0U, 0U))
+    {
         cout << "There's no peer record with such name in the broker\n";
         return;
     }
     cout << "Peer Address was received successfully, getting titles...\n";
     this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
-    
+
     string args = this->username;
     Message *toBeSent = new Message(GET_USER_TITLES, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
@@ -240,11 +252,12 @@ void Peer::getUserTitles(string otherpeer){
         Message *received = this->rpcToMsg[rpc_id];
         this->rpcToMsg.erase(rpc_id);
         cout << "USER TITLES RECEIVED: \n";
-        
+
         string content = string((char *)received->getMessage(), received->getMessageSize());
         vector<string> args = extractArgs(content);
 
-        for(int i = 0; i < args.size(); i++) cout << args[i] << endl;
+        for (int i = 0; i < args.size(); i++)
+            cout << args[i] << endl;
 
         delete received;
     }
@@ -298,7 +311,8 @@ void Peer::uploadImagePreview(string imageName, string imagePath)
 void Peer::requestImage(string otherpeer, string imageName, int quota)
 {
     pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
-    if(peerToAddress == make_pair(0U, 0U)){
+    if (peerToAddress == make_pair(0U, 0U))
+    {
         cout << "There's no peer record with such name in the broker\n";
         return;
     }
@@ -323,11 +337,12 @@ void Peer::requestImage(string otherpeer, string imageName, int quota)
         {
             string path = GrantedImages + string("/") + imageName + CODED;
             vector<uint8_t> payload = Image::stringToVector(content);
-		cout << "Payload : " << payload.size() << endl;
+            cout << "Payload : " << payload.size() << endl;
             Image img = extractImages(payload)[0];
-		cout << "Image File size = " << img.getSize() << endl;
+            cout << "Image File size = " << img.getSize() << endl;
             Image::writeImage(path, img.getCodified());
-            grantedImagesTitles.push_back(imageName);
+
+            appendFileAndCache(GrantedImages_db, grantedImagesTitles, imageName);
         }
 
         delete received;
@@ -341,7 +356,8 @@ void Peer::requestImage(string otherpeer, string imageName, int quota)
 void Peer::requestImageQuota(string otherpeer, string imageName, int quota)
 {
     pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
-    if(peerToAddress == make_pair(0U, 0U)){
+    if (peerToAddress == make_pair(0U, 0U))
+    {
         cout << "There's no peer record with such name in the broker\n";
         return;
     }
@@ -370,7 +386,6 @@ void Peer::requestImageQuota(string otherpeer, string imageName, int quota)
             string owner = img.getOwner();
             img = Image(DEF_IMG(sz), img.getContent(), owner, quota);
             Image::writeImage(path, img.getCodified());
-
         }
 
         delete received;
@@ -384,7 +399,8 @@ void Peer::requestImageQuota(string otherpeer, string imageName, int quota)
 void Peer::setImageQuota(string otherpeer, string imageName, int quota)
 {
     pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
-    if(peerToAddress == make_pair(0U, 0U)){
+    if (peerToAddress == make_pair(0U, 0U))
+    {
         cout << "There's no peer record with such name in the broker\n";
         return;
     }
@@ -406,11 +422,12 @@ void Peer::setImageQuota(string otherpeer, string imageName, int quota)
         {
             cout << "Setting image quota failed\n";
         }
-        else if(content == "1")
+        else if (content == "1")
         {
             cout << "Setting image quota succeeded\n";
         }
-        else{
+        else
+        {
             cout << "Invalid content in the reply\n";
         }
 
@@ -432,33 +449,36 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
     string msgBody = "0"; // Default reply (invalid operation)
     bool valid = true;
 
-
     if (valid)
     {
 
         switch (op)
         {
         case REQUEST_IMAGE:
-        { 
+        {
             string other_username = VectorToString(args[0]);
             string title = VectorToString(args[1]);
             filter(title);
             int quota = stoi(VectorToString(args[2]));
             vector<Image> img;
             img.push_back(loadMyImage(title, quota));
-            msgBody =  VectorToString(flattenImages(img));
+            msgBody = VectorToString(flattenImages(img));
             //SaveQuotaRecord(other_username, title, quota);
             break;
         }
         case REQUEST_QUOTA:
-        { 
-            string username = VectorToString(args[0]);
-            string password = VectorToString(args[1]);
+        {
+            // TODO: ask user for permission
             msgBody = "1";
             break;
         }
+        case SET_QUOTA:
+        {
+            
+            break;
+        }
         case GET_USER_TITLES:
-        { 
+        {
             msgBody = getMyTitles();
             break;
         }
@@ -466,7 +486,6 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             cerr << "Peer: Unsupported Operation!\n";
             break;
         }
-
     }
 
     response->setMessageType(Reply);
@@ -479,7 +498,7 @@ Image Peer::loadMyImage(string title, int quota)
     int sz;
     string path = MyImages + string("/") + title;
 
-    if(!isdigit(title.back()) && !isalnum(title.back()))
+    if (!isdigit(title.back()) && !isalnum(title.back()))
     {
         cerr << "Hey, title is invalid!!\n";
     }
@@ -493,9 +512,9 @@ string Peer::getMyTitles()
 {
     string res = "";
 
-    for(int i = 0; i < myImageTitles.size(); ++i)
+    for (auto title : myImageTitles)
     {
-        res += myImageTitles[i] + ",";
+        res += title + ",";
     }
 }
 
@@ -503,12 +522,38 @@ void Peer::uploadLocalImage(string path)
 {
     int sz;
     vector<uint8_t> vec = Image::readImage(path, sz);
-    Image img(vec);
-    Image myimg = Image(DEF_IMG(sz), img.getContent(), username, 0);
+    Image myimg = Image(DEF_IMG(sz), vec, username, 0);
+
+    string imageName = path.substr(path.find_last_of('/'));
+    string myPath = MyImages + string("/") + imageName;
     Image::writeImage(path, myimg.getContent());
+
+    appendFileAndCache(MyImages_db, myImageTitles, imageName);
+}
+
+void cacheDB(string path, set<string> &cache)
+{
+    ifstream in(path);
+    string entry;
+    while (getline(in, entry))
+    {
+        cache.insert(entry);
+    }
+}
+
+void appendFileAndCache(string path, set<string> &cache, string entry)
+{
+    if (cache.find(entry) == cache.end())
+    {
+        ofstream out(path, ios_base::app);
+        out << entry << endl;
+
+        cache.insert(entry);
+        out.close();
+    }
 }
 
 Peer::~Peer()
 {
-   this->listenerActive = false;
+    this->listenerActive = false;
 }

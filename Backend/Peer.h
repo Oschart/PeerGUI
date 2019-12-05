@@ -5,22 +5,27 @@
 #include <initializer_list>
 #include <atomic>
 #include <vector>
+#include <set>
 #include "Message.h"
 #include "Server.h"
+#include "ParseUtil.cpp"
 
 #define BROKER_IP "10.7.57.2"
 #define BROKER_PORT 2468
 typedef unsigned int IP;
 typedef unsigned int Port;
 
+#define separator ","
 #define CODED "_c"
 #define MyData "./MyData"
 #define MyImages "./MyData/MyImages"
-#define MyImages_db "./MyData/my_images_db.txt"
+
 #define PREVIEWS "./MyData/Previews"
 #define GrantedImages "./MyData/GrantedImages"
 
-const string separator = ",";
+#define MyImages_db "./MyData/my_images_db.txt"
+#define GrantedImages_db "./MyData/granted_images_db.txt"
+#define Previews_db "./MyData/previews_db.txt"
 
 #define MAX_SIZE 8192
 #define DEF_IMG(sz1) Image::readImage("SPACE.JPG", sz1)
@@ -45,11 +50,11 @@ enum opType
 };
 
 using namespace std;
-class Peer : public Server {
+class Peer : public Server
+{
 
 public:
-
-    Peer(char *_myHostname = "localhost", int _myPort = 0, char *_shostname = "", int _sport=0);
+    Peer(char *_myHostname, int _myPort, char *_shostname, int _sport);
     bool execute(Message *);
     int login(string username, string password);
     int signup(string username, string password);
@@ -86,8 +91,10 @@ private:
     void listenerRun();
 
     map<opType, int> argCount;
-    vector<string> myImageTitles;
-    vector<string> grantedImagesTitles;
+
+    set<string> myImageTitles;
+    set<string> grantedImagesTitles;
+    set<string> previewsTitles;
 };
 //#include "Peer.cpp"
 #endif // PEER_H
