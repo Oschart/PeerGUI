@@ -12,9 +12,9 @@ private:
     vector<uint8_t> codified;
     string owner;
     string title;
-    unsigned int quota;
+    int quota;
 public:
-    Image(vector<uint8_t> defImage, vector<uint8_t> _content, string _owner, unsigned int _quota) :
+    Image(vector<uint8_t> defImage, vector<uint8_t> _content, string _owner, int _quota) :
         codified(defImage), content(_content), owner(_owner), quota(_quota){
         codified.erase(codified.end()-1);
         codified.push_back(0xFE);
@@ -64,7 +64,7 @@ public:
     vector<uint8_t> getContent() { return content; }
     vector<uint8_t> getCodified() { return codified; }
     string getOwner() { return owner; }
-    unsigned int getQuota() { return quota; }
+    int getQuota() { return quota; }
 
     static char* vectorToCharPtr (vector<uint8_t> v) {
         char * c = new char[v.size()];
