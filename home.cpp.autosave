@@ -154,15 +154,7 @@ void home::on_listView_itemClicked(QListWidgetItem *item)
 void home::on_pushButton_7_clicked()
 {
     ui->stackedWidget->setCurrentIndex(4);
-    QDir directory(PREVIEWS);
-    QStringList images = directory.entryList(QStringList() ,QDir::Files);
-    foreach(QString filename, images) {
-        string orig = filename.toUtf8().constData();
-        string user = removeUserfromName(orig);
-        QListWidgetItem* item = new QListWidgetItem(QIcon(PREVIEWS + filename), (orig).c_str());
-        item->setData(Qt::UserRole, user.c_str());
-        ui->listView->addItem(item);
-    }
+    
 
 }
 
