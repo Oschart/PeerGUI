@@ -30,7 +30,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     reg_scr.cpp \
-    visitprofile.cpp
+    visitprofile.cpp \
+    imagelargepreview.cpp
 
 HEADERS += \
     Backend/Image.h \
@@ -47,7 +48,8 @@ HEADERS += \
     login_scr.h \
     mainwindow.h \
     reg_scr.h \
-    visitprofile.h
+    visitprofile.h \
+    imagelargepreview.h
 
 FORMS += \
     browser.ui \
@@ -55,7 +57,8 @@ FORMS += \
     login_scr.ui \
     mainwindow.ui \
     reg_scr.ui \
-    visitprofile.ui
+    visitprofile.ui \
+    imagelargepreview.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
