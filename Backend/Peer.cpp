@@ -73,9 +73,9 @@ int Peer::login(string username, string password)
             createFolder(MyImages);
             createFolder(PREVIEWS);
 
-            cacheDB(MyImages_db, myImageTitles);
+            /*cacheDB(MyImages_db, myImageTitles);
             cacheDB(GrantedImages_db, grantedImagesTitles);
-            cacheDB(Previews_db, previewsTitles);
+            cacheDB(Previews_db, previewsTitles);*/
 
             result = 1;
         }
@@ -193,7 +193,8 @@ int Peer::getPreviews()
             Image::writeImage(path, previews[i].getContent());
 
             
-            appendFileAndCache(Previews_db, previewsTitles, storedImageTitle);
+            //appendFileAndCache(Previews_db, previewsTitles, storedImageTitle);
+            tempImages.push_back(path);
         }
 
         delete received;
@@ -727,12 +728,13 @@ Image Peer::loadMyImage(string title, int quota)
 
 string Peer::getMyTitles()
 {
-    string res = "";
-
-    for (auto title : myImageTitles)
-    {
-        res += title + ",";
+    string titles = "";
+    QDir directory(MyImages);
+    QStringList images = directory.entryList(QStringList() ,QDir::Files);
+    foreach(QString filename, images) {
+        titles += filename.toUtf8().constData() + string(",");
     }
+    titles.pop_back();
 }
 
 void Peer::uploadLocalImage(string path)
@@ -745,9 +747,10 @@ void Peer::uploadLocalImage(string path)
     string myPath = MyImages + imageName;
     Image::writeImage(path, myimg.getContent());
 
-    appendFileAndCache(MyImages_db, myImageTitles, imageName);
+    //appendFileAndCache(MyImages_db, myImageTitles, imageName);
 }
 
+/*
 void Peer::cacheDB(string path, set<string> &cache)
 {
     ifstream in(path);
@@ -756,8 +759,8 @@ void Peer::cacheDB(string path, set<string> &cache)
     {
         cache.insert(entry);
     }
-}
-
+}*/
+/*
 void Peer::appendFileAndCache(string path, set<string> &cache, string entry)
 {
     if (cache.find(entry) == cache.end())
@@ -769,6 +772,7 @@ void Peer::appendFileAndCache(string path, set<string> &cache, string entry)
         out.close();
     }
 }
+*/
 
 Peer::~Peer()
 {
