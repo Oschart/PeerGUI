@@ -2,6 +2,7 @@
 #include "ui_imagelargepreview.h"
 #include <iostream>
 #include <QFileInfo>
+#include <QMessageBox>
 #include "globals.h"
 
 ImageLargePreview::ImageLargePreview(std::string path, QWidget *parent) :
@@ -28,8 +29,11 @@ void ImageLargePreview::on_pushButton_clicked()
 
 void ImageLargePreview::on_pushButton_2_clicked()
 {
-        //std::cout << "I will upload this " << imagePath << std::endl;
         std::string imageName = QFileInfo(imagePath.c_str()).fileName().toUtf8().constData();
-        //std::cout << "With this name " << imageName << std::endl;
-        peer.uploadImagePreview(imageName, imagePath);
+        int res = peer.uploadImagePreview(imageName, imagePath);
+        if (res == 1)  QMessageBox::information (this, "Upload", "Upload is successful");
+        if (res == 0)  QMessageBox::information (this, "Upload", "Upload is unsuccessful");
+        if (res == -1)  QMessageBox::information (this, "Upload", "Cannot connect to server");
+
+
 }

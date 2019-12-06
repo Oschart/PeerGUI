@@ -165,14 +165,16 @@ pair<IP, Port> Peer::getAddress(string otherPeer)
     return make_pair(0U, 0U);
 }
 
-void Peer::getPreviews()
+int Peer::getPreviews()
 {
     this->udpSocket->initializeClient(brokerIP, brokerPort);
     string args = this->sessionToken;
     Message *toBeSent = new Message(GET_PREVIEW_FEED, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
+    int res;
     if (this->execute(toBeSent))
     {
+        res = 1;
         int rpc_id = toBeSent->getRPCId();
         Message *received = this->rpcToMsg[rpc_id];
         this->rpcToMsg.erase(rpc_id);
@@ -200,8 +202,10 @@ void Peer::getPreviews()
     else
     { //the waiting thread timed out
         cout << "Get Previews operation timed out!\n";
+        res = -1;
     }
     delete toBeSent;
+    return res;
 }
 
 void Peer::getUserPreviews(string otherpeer)
@@ -274,7 +278,7 @@ void Peer::getUserTitles(string otherpeer)
     }
 }
 
-void Peer::uploadImagePreview(string imageName, string imagePath)
+int Peer::uploadImagePreview(string imageName, string imagePath)
 {
     this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
     int sz1, sz2;
@@ -289,6 +293,7 @@ void Peer::uploadImagePreview(string imageName, string imagePath)
     
     Message *toBeSent = new Message(UPLOAD_PREVIEW, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
+    int res;
     if (this->execute(toBeSent))
     {
         int rpc_id = toBeSent->getRPCId();
@@ -298,21 +303,26 @@ void Peer::uploadImagePreview(string imageName, string imagePath)
         if (content == "1")
         {
             cout << "Upload Succeeded\n";
+            res = 1;
         }
         else if (content == "0")
         {
             cout << "Upload Failed\n";
+            res = 0;
         }
         else
         {
             cout << "Invalid Content\n";
+            res = -1;
         }
         delete received;
     }
     else
     {
         cout << "Upload Previews operation timed out!\n";
+        res = -1;
     }
+    return res;
 }
 
 void Peer::requestImage(string otherpeer, string imageName, int quota)
