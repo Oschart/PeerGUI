@@ -10,7 +10,7 @@
 #include "Server.h"
 //#include "ParseUtil.cpp"
 
-#define BROKER_IP "10.7.57.2"
+#define BROKER_IP "10.7.57.213"
 #define BROKER_PORT 2468
 typedef unsigned int IP;
 typedef unsigned int Port;
@@ -74,13 +74,13 @@ public:
     bool execute(Message *);
     int login(string username, string password);
     int signup(string username, string password);
-    void getPreviews();
+    int getPreviews();
     void getUserPreviews(string otherpeer);
 
     void getUserTitles(string otherpeer);
     //void getUserTitlesCallback(string otherpeer);
 
-    void uploadImagePreview(string imageName, string imagePath);
+    int uploadImagePreview(string imageName, string imagePath);
     void requestImage(string otherpeer, string imageName, int quota);
     void requestImageQuota(string otherpeer, string imageName, int quota);
     void setImageQuota(string otherpeer, string imageName, int quota);
@@ -92,7 +92,7 @@ public:
     void denyQuotaRequest(string otherpeer, string imageName);
     
     void answerImageRequest(int request_id, int decision);
-    void approveImageRequest(string otherpeer, string imageName);
+    void approveImageRequest(string otherpeer, string imageName, int quota);
     void denyImageRequest(string otherpeer, string imageName);
 
     Message *doOperation(Message *_received, IP user_ip, Port user_port);

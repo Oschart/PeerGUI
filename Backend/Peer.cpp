@@ -165,14 +165,16 @@ pair<IP, Port> Peer::getAddress(string otherPeer)
     return make_pair(0U, 0U);
 }
 
-void Peer::getPreviews()
+int Peer::getPreviews()
 {
     this->udpSocket->initializeClient(brokerIP, brokerPort);
     string args = this->sessionToken;
     Message *toBeSent = new Message(GET_PREVIEW_FEED, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
+    int res;
     if (this->execute(toBeSent))
     {
+        res = 1;
         int rpc_id = toBeSent->getRPCId();
         Message *received = this->rpcToMsg[rpc_id];
         this->rpcToMsg.erase(rpc_id);
@@ -199,8 +201,10 @@ void Peer::getPreviews()
     else
     { //the waiting thread timed out
         cout << "Get Previews operation timed out!\n";
+        res = -1;
     }
     delete toBeSent;
+    return res;
 }
 
 void Peer::getUserPreviews(string otherpeer)
@@ -273,7 +277,7 @@ void Peer::getUserTitles(string otherpeer)
     }
 }
 
-void Peer::uploadImagePreview(string imageName, string imagePath)
+int Peer::uploadImagePreview(string imageName, string imagePath)
 {
     this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
     int sz1, sz2;
@@ -288,6 +292,7 @@ void Peer::uploadImagePreview(string imageName, string imagePath)
     
     Message *toBeSent = new Message(UPLOAD_PREVIEW, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
+    int res;
     if (this->execute(toBeSent))
     {
         int rpc_id = toBeSent->getRPCId();
@@ -297,21 +302,26 @@ void Peer::uploadImagePreview(string imageName, string imagePath)
         if (content == "1")
         {
             cout << "Upload Succeeded\n";
+            res = 1;
         }
         else if (content == "0")
         {
             cout << "Upload Failed\n";
+            res = 0;
         }
         else
         {
             cout << "Invalid Content\n";
+            res = -1;
         }
         delete received;
     }
     else
     {
         cout << "Upload Previews operation timed out!\n";
+        res = -1;
     }
+    return res;
 }
 
 void Peer::requestImage(string otherpeer, string imageName, int quota)
@@ -455,7 +465,7 @@ void Peer::answerImageRequest(int request_id, int decision)
     imageQuotaRequest request = imageRequests[request_id];
     if(decision == 1)
     {
-        approveImageRequest(request.requester, request.imageName);
+        approveImageRequest(request.requester, request.imageName, request.quota);
     }
     else
     {
@@ -472,10 +482,16 @@ void Peer::denyImageRequest(string otherpeer, string imageName)
 }
 
 
-void Peer::approveImageRequest(string otherpeer, string imageName)
+void Peer::approveImageRequest(string otherpeer, string imageName, int quota)
 {
+    int sz;
+    string path = MyImages + imageName;
+    Image img(DEF_IMG(sz), Image::readImage(path, sz), username, quota);
+    vector<Image> imageVec;
+    imageVec.push_back(img);
 
-    string args = string("1") + separator + username + separator + imageName;
+    string flatImage = VectorToString(flattenImages(imageVec));
+    string args = string("1") + separator + username + separator + imageName + separator + flatImage;
     sendRequest(ANSWER_IMAGE_REQUEST, otherpeer, args);
 }
 
@@ -504,7 +520,7 @@ void Peer::denyQuotaRequest(string otherpeer, string imageName)
 void Peer::approveQuotaRequest(string otherpeer, string imageName, int quota)
 {
 
-    string args = string("1") + separator + username + separator + imageName;
+    string args = string("1") + separator + username + separator + imageName + separator + to_string(quota);
     sendRequest(ANSWER_QUOTA_REQUEST, otherpeer, args);
 
 }
@@ -605,6 +621,9 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
         }
         case SET_QUOTA:
         {
+            string sender = VectorToString(args[0]);
+            string imageName = VectorToString(args[1]);
+
             string image_name = addUsertoName(imageName, sender);
             int quota = stoi(VectorToString(args[2]));
             setQuotaGrantedImage(image_name, quota);

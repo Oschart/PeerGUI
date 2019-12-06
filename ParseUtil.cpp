@@ -72,7 +72,8 @@ vector<string> extractArgs(string s)
 
 string addUsertoName(string imageName, string user){
     string _user = "_" + user;
-    return imageName.insert(imageName.find_last_of("."), _user);
+    imageName.insert(imageName.find_last_of("."), _user);
+    return imageName;
 }
 
 string removeUserfromName(string& imageName){

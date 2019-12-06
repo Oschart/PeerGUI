@@ -15,6 +15,8 @@
 #include <QFileDialog>
 #include <QDebug>
 #include "Backend/Peer.h"
+#include "globals.h"
+#include "Backend/ParseUtil.h"
 //using namespace std;
 
 
@@ -23,6 +25,8 @@ home::home(QWidget *parent) :
     ui(new Ui::home)
 {
     ui->setupUi(this);
+    ui->stackedWidget->setCurrentIndex(2);
+
 
 }
 
@@ -93,19 +97,31 @@ void home::on_pushButton_13_clicked()
 
 void home::on_pushButton_6_clicked()
 {
-    ui->stackedWidget->setCurrentIndex(0);
 
     ui->listView->setViewMode(QListWidget::IconMode);
 
     ui->listView->setIconSize(QSize(50, 50));
 
     ui->listView->setResizeMode((QListWidget::Adjust));
+    ui->listView->clear();
 
-    ui->listView->addItem(new QListWidgetItem(QIcon("/home/wan/DS_GUI1/imgs/1.jpeg"), "landscape\nEslam"));
-    ui->listView->addItem(new QListWidgetItem(QIcon("/home/wan/DS_GUI1/imgs/2.jpeg"), "nature\nFadi"));
-    ui->listView->addItem(new QListWidgetItem(QIcon("/home/wan/DS_GUI1/imgs/3.jpeg"), "charming\nOscar"));
-    ui->listView->addItem(new QListWidgetItem(QIcon("/home/wan/DS_GUI1/imgs/4.jpeg"), "cool\nRagab"));
-    ui->listView->addItem(new QListWidgetItem(QIcon("/home/wan/DS_GUI1/imgs/5.jpeg"), "Nice\nAmr"));
+    int res =peer.getPreviews();
+    if (res == -1)  QMessageBox::information (this, "Previews", "Could not connect to the server");
+    else  {
+        ui->stackedWidget->setCurrentIndex(0);
+        QDir directory(PREVIEWS);
+        QStringList images = directory.entryList(QStringList() ,QDir::Files);
+        foreach(QString filename, images) {
+            ui->listView->addItem(new QListWidgetItem(QIcon(PREVIEWS + filename), filename));
+        }
+        peer.clearTempImages();
+    }
+
+//    ui->listView->addItem(new QListWidgetItem(QIcon("/home/wan/DS_GUI1/imgs/1.jpeg"), "landscape\nEslam"));
+//    ui->listView->addItem(new QListWidgetItem(QIcon("/home/wan/DS_GUI1/imgs/2.jpeg"), "nature\nFadi"));
+//    ui->listView->addItem(new QListWidgetItem(QIcon("/home/wan/DS_GUI1/imgs/3.jpeg"), "charming\nOscar"));
+//    ui->listView->addItem(new QListWidgetItem(QIcon("/home/wan/DS_GUI1/imgs/4.jpeg"), "cool\nRagab"));
+//    ui->listView->addItem(new QListWidgetItem(QIcon("/home/wan/DS_GUI1/imgs/5.jpeg"), "Nice\nAmr"));
 
 }
 
