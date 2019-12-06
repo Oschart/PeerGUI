@@ -7,7 +7,7 @@
 #include <QMessageBox>
 #include <iostream>
 #include <QFile>
- #include <QStackedWidget>
+#include <QStackedWidget>
 #include <QFileSystemModel>
 #include <QWidget>
 #include <QListWidget>
@@ -38,11 +38,9 @@ void home::on_pushButton_3_clicked()
 
 void home::on_pushButton_clicked()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, "Upload an img");
-    QDir d = QFileInfo(filePath).absoluteDir();
-    QString absolute=d.absolutePath();
-    qDebug() << absolute;
-
+    QString filePath = QFileDialog::getOpenFileName(this, "Upload an image");
+    QString filename = QFileInfo(filePath).fileName();
+    std::cout << QFile::copy(filePath, MyImages + filename) << std::endl;
 }
 
 void home::on_pushButton_2_clicked()
@@ -56,7 +54,7 @@ void home::on_pushButton_2_clicked()
     QDir directory(MyImages);
     QStringList images = directory.entryList(QStringList() ,QDir::Files);
     foreach(QString filename, images) {
-        ui->listView_2->addItem(new QListWidgetItem(QIcon(string(string(MyImages) + "/").c_str() + filename), filename));
+        ui->listView_2->addItem(new QListWidgetItem(QIcon(MyImages + filename), filename));
     }
 
 }
@@ -121,7 +119,7 @@ void home::on_pushButton_5_clicked()
 
 void home::on_listView_2_itemPressed(QListWidgetItem *item)
 {
-    ImageLargePreview * pr = new ImageLargePreview(string(string(MyImages) + "/") + ((item->text()).toUtf8().constData()));
+    ImageLargePreview * pr = new ImageLargePreview((MyImages + item->text()).toUtf8().constData());
     pr->show();
 
 }
