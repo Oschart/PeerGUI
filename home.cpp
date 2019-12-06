@@ -3,6 +3,7 @@
 #include "browser.h"
 #include "visitprofile.h"
 #include "imagelargepreview.h"
+#include "requestimagedialog.h"
 #include <QTextStream>
 #include <QMessageBox>
 #include <iostream>
@@ -112,16 +113,14 @@ void home::on_pushButton_6_clicked()
         QDir directory(PREVIEWS);
         QStringList images = directory.entryList(QStringList() ,QDir::Files);
         foreach(QString filename, images) {
-            ui->listView->addItem(new QListWidgetItem(QIcon(PREVIEWS + filename), filename));
+            string orig = filename.toUtf8().constData();
+            string user = removeUserfromName(orig);
+            QListWidgetItem* item = new QListWidgetItem(QIcon(PREVIEWS + filename), (orig).c_str());
+            item->setData(Qt::UserRole, user.c_str());
+            ui->listView->addItem(item);
         }
         peer.clearTempImages();
     }
-
-//    ui->listView->addItem(new QListWidgetItem(QIcon("/home/wan/DS_GUI1/imgs/1.jpeg"), "landscape\nEslam"));
-//    ui->listView->addItem(new QListWidgetItem(QIcon("/home/wan/DS_GUI1/imgs/2.jpeg"), "nature\nFadi"));
-//    ui->listView->addItem(new QListWidgetItem(QIcon("/home/wan/DS_GUI1/imgs/3.jpeg"), "charming\nOscar"));
-//    ui->listView->addItem(new QListWidgetItem(QIcon("/home/wan/DS_GUI1/imgs/4.jpeg"), "cool\nRagab"));
-//    ui->listView->addItem(new QListWidgetItem(QIcon("/home/wan/DS_GUI1/imgs/5.jpeg"), "Nice\nAmr"));
 
 }
 
@@ -137,5 +136,17 @@ void home::on_listView_2_itemPressed(QListWidgetItem *item)
 {
     ImageLargePreview * pr = new ImageLargePreview((MyImages + item->text()).toUtf8().constData());
     pr->show();
+
+}
+
+void home::on_listView_itemClicked(QListWidgetItem *item)
+{
+    std::cout << "Look at this " << item->text().toUtf8().constData() << std::endl;
+    string user = item->data(Qt::UserRole).toString().toUtf8().constData();
+    std::cout << "From this " << user << endl;
+    RequestImageDialog * pr = new RequestImageDialog(user);
+    pr->show();
+
+
 
 }

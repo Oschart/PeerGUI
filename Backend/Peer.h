@@ -1,5 +1,15 @@
 #ifndef PEER_H
 #define PEER_H
+
+#include <QFile>
+#include <QStackedWidget>
+#include <QFileSystemModel>
+#include <QWidget>
+#include <QListWidget>
+#include <QListView>
+#include <QFileDialog>
+#include <QDebug>
+
 #include <string>
 #include <thread>
 #include <initializer_list>
@@ -126,14 +136,14 @@ private:
 
     map<opType, int> argCount;
 
-    set<string> myImageTitles;
+    /*set<string> myImageTitles;
     set<string> grantedImagesTitles;
-    set<string> previewsTitles;
+    set<string> previewsTitles;*/
 
     vector<string> tempImages;
 
-    void cacheDB(string path, set<string> &cache);
-    void appendFileAndCache(string path, set<string> &cache, string entry);
+    //void cacheDB(string path, set<string> &cache);
+    //void appendFileAndCache(string path, set<string> &cache, string entry);
 };
 //#include "Peer.cpp"
 #endif // PEER_H
