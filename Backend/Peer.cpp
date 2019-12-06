@@ -208,7 +208,7 @@ int Peer::getPreviews()
     return res;
 }
 
-void Peer::getUserPreviews(string otherpeer)
+int Peer::getUserPreviews(string otherpeer)
 {
 
     this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
@@ -216,16 +216,16 @@ void Peer::getUserPreviews(string otherpeer)
     string args = this->sessionToken + separator + otherpeer;
     Message *toBeSent = new Message(GET_USER_PREVIEW, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
+    int res;
     if (this->execute(toBeSent))
     {
+        res = 1;
         int rpc_id = toBeSent->getRPCId();
         Message *received = this->rpcToMsg[rpc_id];
         this->rpcToMsg.erase(rpc_id);
         cout << "USER PREVIEWS RECEIVED\n";
         vector<uint8_t> flatArgs = Image::charPtrToVector((char *)received->getMessage(), received->getMessageSize());
-
         vector<Image> previews = extractImages(flatArgs);
-
         for (int i = 0; i < previews.size(); i++)
         {
             string storedImageTitle = addUsertoName(previews[i].getTitle(), previews[i].getOwner());
@@ -239,8 +239,9 @@ void Peer::getUserPreviews(string otherpeer)
     }
     else
     {
-        cout << "Get User Previews operation timed out!\n";
+        cout << "Get User Previews operation timed out!\n"; res = -1;
     }
+    return res;
 }
 
 void Peer::getUserTitles(string otherpeer)
@@ -585,7 +586,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             int quota = stoi(VectorToString(args[2]));
             
             imageQuotaRequest request(other_username, title, quota);
-            quotaRequests.push_back(request);
+            imageRequests.push_back(request);
             
             msgBody = "1";  // Request received
             
@@ -616,7 +617,19 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
         }
         case REQUEST_QUOTA:
         {
-            // TODO: ask user for permission
+            string other_username = VectorToString(args[0]);
+            string title = VectorToString(args[1]);
+            filter(title);
+            int quota = stoi(VectorToString(args[2]));
+            
+            imageQuotaRequest request(other_username, title, quota);
+            quotaRequests.push_back(request);
+            
+            msgBody = "1";  // Request received
+            
+            
+            //SaveQuotaRecord(other_username, title, quota);
+            break;// TODO: ask user for permission
             msgBody = "1";
             break;
         }

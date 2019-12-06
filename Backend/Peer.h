@@ -85,7 +85,7 @@ public:
     int login(string username, string password);
     int signup(string username, string password);
     int getPreviews();
-    void getUserPreviews(string otherpeer);
+    int getUserPreviews(string otherpeer);
 
     void getUserTitles(string otherpeer);
     //void getUserTitlesCallback(string otherpeer);

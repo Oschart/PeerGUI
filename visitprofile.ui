@@ -13,6 +13,16 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <widget class="QListWidget" name="listView">
+   <property name="geometry">
+    <rect>
+     <x>95</x>
+     <y>41</y>
+     <width>441</width>
+     <height>411</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
