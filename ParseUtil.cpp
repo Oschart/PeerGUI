@@ -70,6 +70,11 @@ vector<string> extractArgs(string s)
     return args;
 }
 
+string addUsertoName(string imageName, string user){
+    string _user = "_" + user;
+    return imageName.insert(imageName.find_last_of("."), _user);
+}
+
 vector<vector<uint8_t>> extractArgsUntil(vector<uint8_t> &flat, int num)
 {
     vector<vector<uint8_t>> args;
