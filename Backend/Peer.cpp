@@ -584,7 +584,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             int quota = stoi(VectorToString(args[2]));
             
             imageQuotaRequest request(other_username, title, quota);
-            quotaRequests.push_back(request);
+            imageRequests.push_back(request);
             
             msgBody = "1";  // Request received
             
@@ -615,7 +615,19 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
         }
         case REQUEST_QUOTA:
         {
-            // TODO: ask user for permission
+            string other_username = VectorToString(args[0]);
+            string title = VectorToString(args[1]);
+            filter(title);
+            int quota = stoi(VectorToString(args[2]));
+            
+            imageQuotaRequest request(other_username, title, quota);
+            quotaRequests.push_back(request);
+            
+            msgBody = "1";  // Request received
+            
+            
+            //SaveQuotaRecord(other_username, title, quota);
+            break;// TODO: ask user for permission
             msgBody = "1";
             break;
         }
