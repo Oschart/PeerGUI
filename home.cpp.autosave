@@ -74,29 +74,22 @@ void home::on_pushButton_8_clicked()
 
 void home::on_pushButton_13_clicked()
 {
-//    QString username = ui->lineEdit_2->text();
+    QString username = ui->lineEdit_2->text();
 
-//    QFile inputFile("/home/wan/DS_GUI1/profileName.txt");
-//    if (inputFile.open(QIODevice::ReadOnly))
-//    {
-//       QTextStream in(&inputFile);
-//       while (!in.atEnd())
-//       {
-//          QString line = in.readLine();
-//          if(username == line) {
-//              visitProfile *wdg = new visitProfile;
-//              wdg->show();
-//              //close()
-//          }
-//       }
-//       inputFile.close();
-//    }
-
-    string username = ui->lineEdit_2->text().toUtf8().constData();
-    if (username != ""){
-        visitProfile * vp = new visitProfile(username);
-        vp->show();
-
+    QFile inputFile("/home/wan/DS_GUI1/profileName.txt");
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+       QTextStream in(&inputFile);
+       while (!in.atEnd())
+       {
+          QString line = in.readLine();
+          if(username == line) {
+              visitProfile *wdg = new visitProfile;
+              wdg->show();
+              //close()
+          }
+       }
+       inputFile.close();
     }
 
 
@@ -161,15 +154,7 @@ void home::on_listView_itemClicked(QListWidgetItem *item)
 void home::on_pushButton_7_clicked()
 {
     ui->stackedWidget->setCurrentIndex(4);
-    QDir directory(PREVIEWS);
-    QStringList images = directory.entryList(QStringList() ,QDir::Files);
-    foreach(QString filename, images) {
-        string orig = filename.toUtf8().constData();
-        string user = removeUserfromName(orig);
-        QListWidgetItem* item = new QListWidgetItem(QIcon(PREVIEWS + filename), (orig).c_str());
-        item->setData(Qt::UserRole, user.c_str());
-        ui->listView->addItem(item);
-    }
+    
 
 }
 
