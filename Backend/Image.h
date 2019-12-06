@@ -116,6 +116,7 @@ public:
         }
         char * c = Image::vectorToCharPtr(bytes);
         output.write(c, bytes.size());
+        output.close();
         delete [] c;
         return;
     }

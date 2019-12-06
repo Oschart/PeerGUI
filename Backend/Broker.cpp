@@ -249,6 +249,7 @@ int Broker::Register(string username, string password)
         out << username << " : \'" << password << "\'" << endl;
 
         createFolder(user_dir + string("/") + username);
+        out.close();
         return 1;
     }
     else

@@ -115,7 +115,7 @@ vector<Image> extractImages(vector<uint8_t> &data)
 {
     vector<Image> imgs;
 
-    for(int i = 0; i < data.size()-1; ++i)
+    for(int i = 0; i < int(data.size())-1; ++i)
     {
         string title = getNext(data, i);
         string size_str = getNext(data, i);
@@ -188,9 +188,14 @@ bool createFolder(string pathname)
 bool deleteFile(string pathname)
 {
     if( remove( pathname.c_str()) != 0 )
-        cout << "Error deleting file " << pathname << "\n";
-    else
+        {
+            cout << "Error deleting file " << pathname << "\n";
+            return false;
+            }
+    else{
         cout << "File " << pathname << " Successfully Deleted\n";
+        return true;}
+
 }
 
 void saveDBRecord(string path, string key, string data)

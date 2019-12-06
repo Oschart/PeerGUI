@@ -185,13 +185,13 @@ int Peer::getPreviews()
 
         for (int i = 0; i < previews.size(); i++)
         {
-            //imageTitle.pop_back();
+            cout << "OWNER ====> " << previews[i].getOwner() << endl;
             string storedImageTitle = addUsertoName(previews[i].getTitle(), previews[i].getOwner());
 
             string path = PREVIEWS + storedImageTitle;
-            //this->imageToPeer[storedImageTitle] = previews[i].getOwner();
             Image::writeImage(path, previews[i].getContent());
 
+            cout << "Image Title = " << storedImageTitle << endl;
             
             //appendFileAndCache(Previews_db, previewsTitles, storedImageTitle);
             tempImages.push_back(path);
