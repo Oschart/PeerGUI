@@ -17,18 +17,18 @@ typedef unsigned int Port;
 
 #define separator ","
 #define CODED "_c"
-#define MyData "./MyData/"
-#define MyImages "./MyData/MyImages/"
+#define MyData "/home/wan/Documents/MyData/"
+#define MyImages "/home/wan/Documents/MyData/MyImages/"
 
-#define PREVIEWS "./MyData/Previews/"
-#define GrantedImages "./MyData/GrantedImages/"
+#define PREVIEWS "/home/wan/Documents/MyData/Previews/"
+#define GrantedImages "/home/wan/Documents/MyData/GrantedImages/"
 
-#define MyImages_db "./MyData/my_images_db.txt"
-#define GrantedImages_db "./MyData/granted_images_db.txt"
-#define Previews_db "./MyData/previews_db.txt"
+#define MyImages_db "/home/wan/Documents/MyData/my_images_db.txt"
+#define GrantedImages_db "/home/wan/Documents/MyData/granted_images_db.txt"
+#define Previews_db "/home/wan/Documents/MyData/previews_db.txt"
 
 #define MAX_SIZE 8192
-#define DEF_IMG(sz1) Image::readImage("SPACE.JPG", sz1)
+#define DEF_IMG(sz1) Image::readImage("/home/wan/Documents/MyData/SPACE.JPG", sz1)
 
 enum opType
 {
@@ -43,7 +43,8 @@ enum opType
     REQUEST_IMAGE,
     REQUEST_QUOTA,
     SET_QUOTA,
-    APPROVE_QUOTA,
+    ANSWER_QUOTA_REQUEST,
+    ANSWER_IMAGE_REQUEST,
     GET_USER_TITLES_CALLBACK,
     REQUEST_IMAGE_CALLBACK,
     REQUEST_QUOTA_CALLBACK,
@@ -97,6 +98,7 @@ public:
     Message *doOperation(Message *_received, IP user_ip, Port user_port);
 
     void viewGrantedImage(string imageName);
+    void setQuotaGrantedImage(string imageName, int quota);
     void clearTempImages();
 
     Image loadMyImage(string path, int quota);

@@ -2,17 +2,19 @@
 #include "ui_home.h"
 #include "browser.h"
 #include "visitprofile.h"
+#include "imagelargepreview.h"
 #include <QTextStream>
 #include <QMessageBox>
 #include <iostream>
 #include <QFile>
- #include <QStackedWidget>
+#include <QStackedWidget>
 #include <QFileSystemModel>
 #include <QWidget>
 #include <QListWidget>
 #include <QListView>
 #include <QFileDialog>
 #include <QDebug>
+#include "Backend/Peer.h"
 //using namespace std;
 
 
@@ -36,11 +38,9 @@ void home::on_pushButton_3_clicked()
 
 void home::on_pushButton_clicked()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, "Upload an img");
-    QDir d = QFileInfo(filePath).absoluteDir();
-    QString absolute=d.absolutePath();
-    qDebug() << absolute;
-
+    QString filePath = QFileDialog::getOpenFileName(this, "Upload an image");
+    QString filename = QFileInfo(filePath).fileName();
+    std::cout << QFile::copy(filePath, MyImages + filename) << std::endl;
 }
 
 void home::on_pushButton_2_clicked()
@@ -50,7 +50,13 @@ void home::on_pushButton_2_clicked()
     ui->listView_2->setViewMode(QListWidget::IconMode);
     ui->listView_2->setIconSize(QSize(50, 50));
     ui->listView_2->setResizeMode((QListWidget::Adjust));
-    ui->listView_2->addItem(new QListWidgetItem(QIcon("/home/wan/Downloads/imgs/skull1.jpg"), "OSKAR"));
+    ui->listView_2->clear();
+    QDir directory(MyImages);
+    QStringList images = directory.entryList(QStringList() ,QDir::Files);
+    foreach(QString filename, images) {
+        ui->listView_2->addItem(new QListWidgetItem(QIcon(MyImages + filename), filename));
+    }
+
 }
 
 
@@ -108,5 +114,12 @@ void home::on_pushButton_6_clicked()
 void home::on_pushButton_5_clicked()
 {
     ui->stackedWidget->setCurrentIndex(2);
+
+}
+
+void home::on_listView_2_itemPressed(QListWidgetItem *item)
+{
+    ImageLargePreview * pr = new ImageLargePreview((MyImages + item->text()).toUtf8().constData());
+    pr->show();
 
 }

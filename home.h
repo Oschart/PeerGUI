@@ -2,6 +2,7 @@
 #define HOME_H
 
 #include <QWidget>
+#include <QListWidgetItem>
 
 
 namespace Ui {
@@ -35,6 +36,8 @@ private slots:
 
 
     void on_pushButton_5_clicked();
+
+    void on_listView_2_itemPressed(QListWidgetItem *item);
 
 private:
     Ui::home *ui;
