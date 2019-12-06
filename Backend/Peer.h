@@ -92,7 +92,7 @@ public:
     void denyQuotaRequest(string otherpeer, string imageName);
     
     void answerImageRequest(int request_id, int decision);
-    void approveImageRequest(string otherpeer, string imageName);
+    void approveImageRequest(string otherpeer, string imageName, int quota);
     void denyImageRequest(string otherpeer, string imageName);
 
     Message *doOperation(Message *_received, IP user_ip, Port user_port);
