@@ -509,6 +509,27 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             //SaveQuotaRecord(other_username, title, quota);
             break;
         }
+        case ANSWER_IMAGE_REQUEST:
+        {
+            string response = VectorToString(args[0]);
+            string sender = VectorToString(args[1]);
+            string imageName = VectorToString(args[2]);
+
+            if(response == '1'){
+                cout << "Image request approved\n";
+                string full_image_name = imageName + "_" + sender;
+                Image newImage(args[3]);
+                Image::writeImage(full_image_name, newImage.getCodified());
+
+            }
+            else if(response == '0'){
+                cout << "Image request denied\n";
+            }
+            else{
+                cout << "Undefined paramater in answer Image request\n";
+            }
+            break;
+        }
         case REQUEST_QUOTA:
         {
             // TODO: ask user for permission
@@ -524,14 +545,17 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
         }
         case ANSWER_QUOTA_REQUEST:
         {
-            string image_name = VectorToString(args[2]) + "_" + VectorToString(args[1]);
-            int quota = stoi(VectorToString(args[3]));
+            string response = VectorToString(args[0]);
+            string sender = VectorToString(args[1]);
+            string imageName = VectorToString(args[2]);
             
-            if(args[0] == '1'){
+            if(response == '1'){
                 cout << "Quota request approved\n";
-                setQuotaGrantedImage(image_name,quota);
+                int quota = stoi(VectorToString(args[3]));
+                string full_image_name = imageName + "_" + sender;
+                setQuotaGrantedImage(full_image_name,quota);
             }
-            else if(args[0] == '0'){
+            else if(response == '0'){
                 cout << "Quota request denied\n";
             }
             else{
