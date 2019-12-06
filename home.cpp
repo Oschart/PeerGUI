@@ -74,22 +74,29 @@ void home::on_pushButton_8_clicked()
 
 void home::on_pushButton_13_clicked()
 {
-    QString username = ui->lineEdit_2->text();
+//    QString username = ui->lineEdit_2->text();
 
-    QFile inputFile("/home/wan/DS_GUI1/profileName.txt");
-    if (inputFile.open(QIODevice::ReadOnly))
-    {
-       QTextStream in(&inputFile);
-       while (!in.atEnd())
-       {
-          QString line = in.readLine();
-          if(username == line) {
-              visitProfile *wdg = new visitProfile;
-              wdg->show();
-              //close()
-          }
-       }
-       inputFile.close();
+//    QFile inputFile("/home/wan/DS_GUI1/profileName.txt");
+//    if (inputFile.open(QIODevice::ReadOnly))
+//    {
+//       QTextStream in(&inputFile);
+//       while (!in.atEnd())
+//       {
+//          QString line = in.readLine();
+//          if(username == line) {
+//              visitProfile *wdg = new visitProfile;
+//              wdg->show();
+//              //close()
+//          }
+//       }
+//       inputFile.close();
+//    }
+
+    string username = ui->lineEdit_2->text().toUtf8().constData();
+    if (username != ""){
+        visitProfile * vp = new visitProfile(username);
+        vp->show();
+
     }
 
 
