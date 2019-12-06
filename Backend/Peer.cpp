@@ -613,6 +613,9 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
         }
         case SET_QUOTA:
         {
+            string sender = VectorToString(args[0]);
+            string imageName = VectorToString(args[1]);
+
             string image_name = addUsertoName(imageName, sender);
             int quota = stoi(VectorToString(args[2]));
             setQuotaGrantedImage(image_name, quota);
