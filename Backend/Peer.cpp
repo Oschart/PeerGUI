@@ -466,7 +466,7 @@ void Peer::answerImageRequest(int request_id, int decision)
     imageQuotaRequest request = imageRequests[request_id];
     if(decision == 1)
     {
-        approveImageRequest(request.requester, request.imageName);
+        approveImageRequest(request.requester, request.imageName, request.quota);
     }
     else
     {
@@ -483,10 +483,16 @@ void Peer::denyImageRequest(string otherpeer, string imageName)
 }
 
 
-void Peer::approveImageRequest(string otherpeer, string imageName)
+void Peer::approveImageRequest(string otherpeer, string imageName, int quota)
 {
+    int sz;
+    string path = MyImages + imageName;
+    Image img(DEF_IMG(sz), Image::readImage(path, sz), username, quota);
+    vector<Image> imageVec;
+    imageVec.push_back(img);
 
-    string args = string("1") + separator + username + separator + imageName;
+    string flatImage = VectorToString(flattenImages(imageVec));
+    string args = string("1") + separator + username + separator + imageName + separator + flatImage;
     sendRequest(ANSWER_IMAGE_REQUEST, otherpeer, args);
 }
 
@@ -515,7 +521,7 @@ void Peer::denyQuotaRequest(string otherpeer, string imageName)
 void Peer::approveQuotaRequest(string otherpeer, string imageName, int quota)
 {
 
-    string args = string("1") + separator + username + separator + imageName;
+    string args = string("1") + separator + username + separator + imageName + separator + to_string(quota);
     sendRequest(ANSWER_QUOTA_REQUEST, otherpeer, args);
 
 }
@@ -595,7 +601,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
 
             if(response == "1"){
                 cout << "Image request approved\n";
-                string full_image_name = imageName + "_" + sender;
+                string full_image_name = addUsertoName(imageName, sender);
                 Image newImage(args[3]);
                 Image::writeImage(full_image_name, newImage.getCodified());
 
@@ -606,6 +612,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             else{
                 cout << "Undefined paramater in answer Image request\n";
             }
+            msgBody = "1";  // Request received
             break;
         }
         case REQUEST_QUOTA:
@@ -616,9 +623,13 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
         }
         case SET_QUOTA:
         {
-            string image_name = VectorToString(args[1]) + "_" + VectorToString(args[0]);
+            string sender = VectorToString(args[0]);
+            string imageName = VectorToString(args[1]);
+
+            string image_name = addUsertoName(imageName, sender);
             int quota = stoi(VectorToString(args[2]));
             setQuotaGrantedImage(image_name, quota);
+            msgBody = "1";  // Request received
             break;
         }
         case ANSWER_QUOTA_REQUEST:
@@ -630,7 +641,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             if(response == "1"){
                 cout << "Quota request approved\n";
                 int quota = stoi(VectorToString(args[3]));
-                string full_image_name = imageName + "_" + sender;
+                string full_image_name = addUsertoName(imageName, sender);
                 setQuotaGrantedImage(full_image_name,quota);
             }
             else if(response == "0"){
@@ -639,6 +650,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             else{
                 cout << "Undefined paramater in answer quota request\n";
             }
+            msgBody = "1";  // Request received
             break;
         }
         case GET_USER_TITLES:

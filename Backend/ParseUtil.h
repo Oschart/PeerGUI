@@ -33,6 +33,8 @@ vector<vector<uint8_t>> extractArgsUntil(vector<uint8_t> &flat, int num);
 
 string flatten(vector<string> args);
 
+string addUsertoName(string imageName, string user);
+
 
 vector<Image> extractImages(vector<uint8_t> &data);
 
