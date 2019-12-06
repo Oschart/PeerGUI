@@ -2,6 +2,7 @@
 #include "ui_home.h"
 #include "browser.h"
 #include "visitprofile.h"
+#include "imagelargepreview.h"
 #include <QTextStream>
 #include <QMessageBox>
 #include <iostream>
@@ -115,5 +116,12 @@ void home::on_pushButton_6_clicked()
 void home::on_pushButton_5_clicked()
 {
     ui->stackedWidget->setCurrentIndex(2);
+
+}
+
+void home::on_listView_2_itemPressed(QListWidgetItem *item)
+{
+    ImageLargePreview * pr = new ImageLargePreview(string(string(MyImages) + "/") + ((item->text()).toUtf8().constData()));
+    pr->show();
 
 }
