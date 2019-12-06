@@ -596,6 +596,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             else{
                 cout << "Undefined paramater in answer Image request\n";
             }
+            msgBody = "1";  // Request received
             break;
         }
         case REQUEST_QUOTA:
@@ -609,6 +610,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             string image_name = addUsertoName(imageName, sender);
             int quota = stoi(VectorToString(args[2]));
             setQuotaGrantedImage(image_name, quota);
+            msgBody = "1";  // Request received
             break;
         }
         case ANSWER_QUOTA_REQUEST:
@@ -629,6 +631,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             else{
                 cout << "Undefined paramater in answer quota request\n";
             }
+            msgBody = "1";  // Request received
             break;
         }
         case GET_USER_TITLES:
