@@ -13,6 +13,7 @@
 #include <QListView>
 #include <QFileDialog>
 #include <QDebug>
+#include "Backend/Peer.h"
 //using namespace std;
 
 
@@ -50,7 +51,13 @@ void home::on_pushButton_2_clicked()
     ui->listView_2->setViewMode(QListWidget::IconMode);
     ui->listView_2->setIconSize(QSize(50, 50));
     ui->listView_2->setResizeMode((QListWidget::Adjust));
-    ui->listView_2->addItem(new QListWidgetItem(QIcon("/home/wan/Downloads/imgs/skull1.jpg"), "OSKAR"));
+    ui->listView_2->clear();
+    QDir directory(MyImages);
+    QStringList images = directory.entryList(QStringList() ,QDir::Files);
+    foreach(QString filename, images) {
+        ui->listView_2->addItem(new QListWidgetItem(QIcon(string(string(MyImages) + "/").c_str() + filename), filename));
+    }
+
 }
 
 
