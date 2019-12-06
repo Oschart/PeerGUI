@@ -7,7 +7,7 @@ Peer::Peer(char *_myHostname, int _myPort, char *_shostname, int _sport) : Serve
     listenerActive = 1;
     thread t(&Peer::listenerRun, this);
     t.detach();
-    this->defaultImage = "./SPACE.JPG";
+    this->defaultImage = "/home/wan/Documents/MyData/SPACE.JPG";
     this->sessionToken = "9";
     rpcID = 10;
 

@@ -18,8 +18,12 @@ public:
 private slots:
     void on_pushButton_clicked();
 
+    void on_pushButton_2_clicked();
+
 private:
     Ui::ImageLargePreview *ui;
+    std::string imagePath;
+
 };
 
 #endif // IMAGELARGEPREVIEW_H
