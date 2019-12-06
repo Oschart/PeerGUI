@@ -229,7 +229,7 @@ void Peer::getUserPreviews(string otherpeer)
         {
             string storedImageTitle = addUsertoName(previews[i].getTitle(), previews[i].getOwner());
             //imageTitle.pop_back();
-            string path = PREVIEWS + imageTitle;
+            string path = PREVIEWS + storedImageTitle;
             //this->imageToPeer[imageTitle] = previews[i].getOwner();
             Image::writeImage(path, previews[i].getContent());
         }

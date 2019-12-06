@@ -112,7 +112,9 @@ void home::on_pushButton_6_clicked()
         QDir directory(PREVIEWS);
         QStringList images = directory.entryList(QStringList() ,QDir::Files);
         foreach(QString filename, images) {
-            ui->listView->addItem(new QListWidgetItem(QIcon(PREVIEWS + filename), filename));
+            string orig = filename.toUtf8().constData();
+            string user = removeUserfromName(orig);
+            ui->listView->addItem(new QListWidgetItem(QIcon(PREVIEWS + filename), (user + ("\n") + orig).c_str()));
         }
         peer.clearTempImages();
     }
