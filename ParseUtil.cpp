@@ -171,6 +171,14 @@ bool createFolder(string pathname)
     }
 }
 
+bool deleteFile(string pathname)
+{
+    if( remove( "myfile.txt" ) != 0 )
+        cout << "Error deleting file " << pathname << "\n";
+    else
+        cout << "File " << pathname << " Successfully Deleted\n";
+}
+
 void saveDBRecord(string path, string key, string data)
 {
     ofstream out(path, ios_base::app);

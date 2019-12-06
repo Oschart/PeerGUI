@@ -181,7 +181,7 @@ void Peer::getPreviews()
         {
             string imageTitle = previews[i].getTitle();
             //imageTitle.pop_back();
-            string path = PREVIEWS + string("/") + imageTitle;
+            string path = PREVIEWS + imageTitle;
             this->imageToPeer[imageTitle] = previews[i].getOwner();
             Image::writeImage(path, previews[i].getContent());
 
@@ -220,7 +220,7 @@ void Peer::getUserPreviews(string otherpeer)
         {
             string imageTitle = previews[i].getTitle();
             //imageTitle.pop_back();
-            string path = PREVIEWS + string("/") + imageTitle;
+            string path = PREVIEWS + imageTitle;
             this->imageToPeer[imageTitle] = previews[i].getOwner();
             Image::writeImage(path, previews[i].getContent());
         }
@@ -336,7 +336,7 @@ void Peer::requestImage(string otherpeer, string imageName, int quota)
         }
         else
         {
-            string path = GrantedImages + string("/") + imageName + CODED;
+            string path = GrantedImages + imageName + CODED;
             vector<uint8_t> payload = Image::stringToVector(content);
             cout << "Payload : " << payload.size() << endl;
             Image img = extractImages(payload)[0];
@@ -382,7 +382,7 @@ void Peer::requestImageQuota(string otherpeer, string imageName, int quota)
         else
         {
             int sz;
-            string path = GrantedImages + string("/") + imageName + CODED;
+            string path = GrantedImages + imageName + CODED;
             Image img = Image(Image::readImage(path, sz));
             string owner = img.getOwner();
             img = Image(DEF_IMG(sz), img.getContent(), owner, quota);
@@ -440,6 +440,40 @@ void Peer::setImageQuota(string otherpeer, string imageName, int quota)
     }
 }
 
+void Peer::approveQuotaRequest(string otherpeer, string imageName)
+{
+    pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
+    if (peerToAddress == make_pair(0U, 0U))
+    {
+        cout << "There's no peer record with such name in the broker\n";
+        return;
+    }
+
+    cout << "Peer Address was received successfully, setting image quota...\n";
+    this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
+
+    string args = otherpeer + separator + imageName;
+    Message *toBeSent = new Message(APPROVE_QUOTA, stringToCharPtr(args), args.length(), (this->rpcID)++);
+    toBeSent->setMessageType(Request);
+
+    if (this->execute(toBeSent))
+    {
+        int rpc_id = toBeSent->getRPCId();
+        Message *received = this->rpcToMsg[rpc_id];
+        this->rpcToMsg.erase(rpc_id);
+        string content = string((char *)received->getMessage(), received->getMessageSize());
+
+        
+        // Don't care about the response: it's an order
+        delete received;
+    }
+    else
+    {
+        cout << "Approving Image Quota Request operation timed out!\n";
+    }
+}
+
+
 Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
 {
     Message *response = _received;
@@ -457,6 +491,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
         {
         case REQUEST_IMAGE:
         {
+            msgBody = "1";  // Request received
             string other_username = VectorToString(args[0]);
             string title = VectorToString(args[1]);
             filter(title);
@@ -478,6 +513,11 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             
             break;
         }
+        case APPROVE_QUOTA:
+        {
+            
+            break;
+        }
         case GET_USER_TITLES:
         {
             msgBody = getMyTitles();
@@ -494,10 +534,40 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
     return response;
 }
 
+void Peer::viewGrantedImage(string title)
+{
+    int sz;
+    string codifiedPath = GrantedImages + title + CODED;
+    vector<uint8_t> cod = Image::readImage(codifiedPath, sz);
+    
+    Image img = Image(cod);
+
+    string contentPath = GrantedImages + title;
+    // Create a temporary non-codified image
+    Image::writeImage(contentPath, img.getContent());
+    tempImages.push_back(contentPath);
+
+    img = Image(DEF_IMG(sz), img.getContent(), img.getOwner(), img.getQuota() - 1);
+
+    // Write back codified image
+    Image::writeImage(codifiedPath, img.getCodified());
+
+}
+
+void Peer::clearTempImages()
+{
+    for(string name : tempImages)
+    {
+        deleteFile(name);
+    }
+    tempImages.clear();
+
+}
+
 Image Peer::loadMyImage(string title, int quota)
 {
     int sz;
-    string path = MyImages + string("/") + title;
+    string path = MyImages + title;
 
     if (!isdigit(title.back()) && !isalnum(title.back()))
     {
@@ -526,7 +596,7 @@ void Peer::uploadLocalImage(string path)
     Image myimg = Image(DEF_IMG(sz), vec, username, 0);
 
     string imageName = path.substr(path.find_last_of('/'));
-    string myPath = MyImages + string("/") + imageName;
+    string myPath = MyImages + imageName;
     Image::writeImage(path, myimg.getContent());
 
     appendFileAndCache(MyImages_db, myImageTitles, imageName);

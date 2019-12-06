@@ -8,6 +8,7 @@
 #include <chrono>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <stdio.h>
 #include "Image.h"
 
 
@@ -41,6 +42,7 @@ vector<uint8_t> flattenImages(vector<Image> imgs);
 
 double sinceThen(chrono::system_clock::time_point then);
 bool createFolder(string pathname);
+bool deleteFile(string pathname);
 
 
 void saveDBRecord(string path, string key, string data);

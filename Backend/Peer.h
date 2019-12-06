@@ -17,11 +17,11 @@ typedef unsigned int Port;
 
 #define separator ","
 #define CODED "_c"
-#define MyData "./MyData"
-#define MyImages "./MyData/MyImages"
+#define MyData "./MyData/"
+#define MyImages "./MyData/MyImages/"
 
-#define PREVIEWS "./MyData/Previews"
-#define GrantedImages "./MyData/GrantedImages"
+#define PREVIEWS "./MyData/Previews/"
+#define GrantedImages "./MyData/GrantedImages/"
 
 #define MyImages_db "./MyData/my_images_db.txt"
 #define GrantedImages_db "./MyData/granted_images_db.txt"
@@ -43,6 +43,7 @@ enum opType
     REQUEST_IMAGE,
     REQUEST_QUOTA,
     SET_QUOTA,
+    APPROVE_QUOTA,
     GET_USER_TITLES_CALLBACK,
     REQUEST_IMAGE_CALLBACK,
     REQUEST_QUOTA_CALLBACK,
@@ -69,7 +70,13 @@ public:
     void requestImageQuota(string otherpeer, string imageName, int quota);
     void setImageQuota(string otherpeer, string imageName, int quota);
 
+    void approveQuotaRequest(string otherpeer, string imageName);
+
     Message *doOperation(Message *_received, IP user_ip, Port user_port);
+
+    void viewGrantedImage(string imageName);
+    void clearTempImages();
+
     Image loadMyImage(string path, int quota);
     string getMyTitles();
     void uploadLocalImage(string path);
@@ -95,6 +102,8 @@ private:
     set<string> myImageTitles;
     set<string> grantedImagesTitles;
     set<string> previewsTitles;
+
+    vector<string> tempImages;
 
     void cacheDB(string path, set<string> &cache);
     void appendFileAndCache(string path, set<string> &cache, string entry);
