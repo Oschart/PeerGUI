@@ -75,6 +75,14 @@ string addUsertoName(string imageName, string user){
     return imageName.insert(imageName.find_last_of("."), _user);
 }
 
+string removeUserfromName(string& imageName){
+    int lastDot = imageName.find_last_of(".");
+    int lastUnderscore = imageName.find_last_of("_");
+    string username = imageName.substr(lastUnderscore, lastDot - lastUnderscore);
+    imageName.erase(lastUnderscore, lastDot - lastUnderscore);
+    return username;
+}
+
 vector<vector<uint8_t>> extractArgsUntil(vector<uint8_t> &flat, int num)
 {
     vector<vector<uint8_t>> args;

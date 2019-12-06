@@ -183,9 +183,8 @@ void Peer::getPreviews()
 
         for (int i = 0; i < previews.size(); i++)
         {
-            string imageTitle = previews[i].getTitle();
             //imageTitle.pop_back();
-            string storedImageTitle = imageTitle + string("_") + previews[i].getOwner();
+            string storedImageTitle = addUsertoName(previews[i].getTitle(), previews[i].getOwner());
 
             string path = PREVIEWS + storedImageTitle;
             //this->imageToPeer[storedImageTitle] = previews[i].getOwner();
@@ -224,7 +223,7 @@ void Peer::getUserPreviews(string otherpeer)
 
         for (int i = 0; i < previews.size(); i++)
         {
-            string imageTitle = previews[i].getTitle();
+            string storedImageTitle = addUsertoName(previews[i].getTitle(), previews[i].getOwner());
             //imageTitle.pop_back();
             string path = PREVIEWS + imageTitle;
             //this->imageToPeer[imageTitle] = previews[i].getOwner();
@@ -586,8 +585,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             if(response == "1"){
                 cout << "Image request approved\n";
                 string full_image_name = addUsertoName(imageName, sender);
-                Image newImage(args[3]);
-                Image::writeImage(full_image_name, newImage.getCodified());
+                Image::writeImage(GrantedImages + full_image_name, args[3]);
 
             }
             else if(response == "0"){
