@@ -591,7 +591,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
 
             if(response == "1"){
                 cout << "Image request approved\n";
-                string full_image_name = imageName + "_" + sender;
+                string full_image_name = addUsertoName(imageName, sender);
                 Image newImage(args[3]);
                 Image::writeImage(full_image_name, newImage.getCodified());
 
@@ -602,6 +602,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             else{
                 cout << "Undefined paramater in answer Image request\n";
             }
+            msgBody = "1";  // Request received
             break;
         }
         case REQUEST_QUOTA:
@@ -612,9 +613,10 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
         }
         case SET_QUOTA:
         {
-            string image_name = VectorToString(args[1]) + "_" + VectorToString(args[0]);
+            string image_name = addUsertoName(imageName, sender);
             int quota = stoi(VectorToString(args[2]));
             setQuotaGrantedImage(image_name, quota);
+            msgBody = "1";  // Request received
             break;
         }
         case ANSWER_QUOTA_REQUEST:
@@ -626,7 +628,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             if(response == "1"){
                 cout << "Quota request approved\n";
                 int quota = stoi(VectorToString(args[3]));
-                string full_image_name = imageName + "_" + sender;
+                string full_image_name = addUsertoName(imageName, sender);
                 setQuotaGrantedImage(full_image_name,quota);
             }
             else if(response == "0"){
@@ -635,6 +637,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             else{
                 cout << "Undefined paramater in answer quota request\n";
             }
+            msgBody = "1";  // Request received
             break;
         }
         case GET_USER_TITLES:
