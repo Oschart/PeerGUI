@@ -51,6 +51,20 @@ enum opType
 };
 
 using namespace std;
+
+struct imageQuotaRequest
+{
+    string requester;
+    string imageName;
+    int quota;
+    imageQuotaRequest(string _requester, string _imageName, int _quota)
+    {
+        requester = _requester;
+        imageName = _imageName;
+        quota = _quota;
+    }
+};
+
 class Peer : public Server
 {
 
@@ -70,7 +84,15 @@ public:
     void requestImageQuota(string otherpeer, string imageName, int quota);
     void setImageQuota(string otherpeer, string imageName, int quota);
 
-    void approveQuotaRequest(string otherpeer, string imageName);
+    void sendRequest(opType operation, string otherpeer, string args);
+
+    void answerQuotaRequest(int request_id, int decision);
+    void approveQuotaRequest(string otherpeer, string imageName, int quota);
+    void denyQuotaRequest(string otherpeer, string imageName);
+    
+    void answerImageRequest(int request_id, int decision);
+    void approveImageRequest(string otherpeer, string imageName);
+    void denyImageRequest(string otherpeer, string imageName);
 
     Message *doOperation(Message *_received, IP user_ip, Port user_port);
 
@@ -92,7 +114,10 @@ private:
     string sessionToken;
     string defaultImage;
     atomic<int> rpcID;
-    map<string, string> imageToPeer;
+    //map<string, string> imageToPeer;
+
+    vector<imageQuotaRequest> quotaRequests;
+    vector<imageQuotaRequest> imageRequests;
 
     pair<IP, Port> getAddress(string otherPeer);
     void listenerRun();

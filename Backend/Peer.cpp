@@ -181,11 +181,13 @@ void Peer::getPreviews()
         {
             string imageTitle = previews[i].getTitle();
             //imageTitle.pop_back();
-            string path = PREVIEWS + imageTitle;
-            this->imageToPeer[imageTitle] = previews[i].getOwner();
+            string storedImageTitle = imageTitle + string("_") + previews[i].getOwner();
+
+            string path = PREVIEWS + storedImageTitle;
+            //this->imageToPeer[storedImageTitle] = previews[i].getOwner();
             Image::writeImage(path, previews[i].getContent());
 
-            string storedImageTitle = imageTitle + string("_") + previews[i].getOwner();
+            
             appendFileAndCache(Previews_db, previewsTitles, storedImageTitle);
         }
 
@@ -221,7 +223,7 @@ void Peer::getUserPreviews(string otherpeer)
             string imageTitle = previews[i].getTitle();
             //imageTitle.pop_back();
             string path = PREVIEWS + imageTitle;
-            this->imageToPeer[imageTitle] = previews[i].getOwner();
+            //this->imageToPeer[imageTitle] = previews[i].getOwner();
             Image::writeImage(path, previews[i].getContent());
         }
 
@@ -271,8 +273,7 @@ void Peer::getUserTitles(string otherpeer)
 void Peer::uploadImagePreview(string imageName, string imagePath)
 {
     int sz1, sz2;
-    Image toSend = Image(Image::readImage(this->defaultImage, sz1), Image::readImage(imagePath, sz2), this->username, 0);
-    Image img2(toSend.getCodified());
+    Image toSend = Image(DEF_IMG(sz1), Image::readImage(imagePath, sz2), this->username, 0);
 
     toSend.setTitle(imageName);
     vector<Image> images;
@@ -440,7 +441,24 @@ void Peer::setImageQuota(string otherpeer, string imageName, int quota)
     }
 }
 
-void Peer::approveQuotaRequest(string otherpeer, string imageName)
+
+// --------------------------------------------------
+
+void Peer::answerImageRequest(int request_id, int decision)
+{
+    imageQuotaRequest request = imageRequests[request_id];
+    if(decision == 1)
+    {
+        approveImageRequest(request.requester, request.imageName);
+    }
+    else
+    {
+        denyImageRequest(request.requester, request.imageName);
+    }
+    
+}
+
+void Peer::denyImageRequest(string otherpeer, string imageName)
 {
     pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
     if (peerToAddress == make_pair(0U, 0U))
@@ -452,7 +470,41 @@ void Peer::approveQuotaRequest(string otherpeer, string imageName)
     cout << "Peer Address was received successfully, setting image quota...\n";
     this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
 
-    string args = otherpeer + separator + imageName;
+    string args = string("0") + separator + username + separator + imageName + separator + "0";
+    Message *toBeSent = new Message(APPROVE_QUOTA, stringToCharPtr(args), args.length(), (this->rpcID)++);
+    toBeSent->setMessageType(Request);
+
+    if (this->execute(toBeSent))
+    {
+        int rpc_id = toBeSent->getRPCId();
+        Message *received = this->rpcToMsg[rpc_id];
+        this->rpcToMsg.erase(rpc_id);
+        string content = string((char *)received->getMessage(), received->getMessageSize());
+
+        
+        // Don't care about the response: it's an order
+        delete received;
+    }
+    else
+    {
+        cout << "Denying Image Quota Request operation timed out!\n";
+    }
+}
+
+
+void Peer::approveImageRequest(string otherpeer, string imageName)
+{
+    pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
+    if (peerToAddress == make_pair(0U, 0U))
+    {
+        cout << "There's no peer record with such name in the broker\n";
+        return;
+    }
+
+    cout << "Peer Address was received successfully, setting image quota...\n";
+    this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
+
+    string args = string("1") + separator + username + separator + imageName;
     Message *toBeSent = new Message(APPROVE_QUOTA, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
 
@@ -473,6 +525,96 @@ void Peer::approveQuotaRequest(string otherpeer, string imageName)
     }
 }
 
+// --------------------------------------------------
+
+void Peer::answerQuotaRequest(int request_id, int decision)
+{
+    imageQuotaRequest request = quotaRequests[request_id];
+    if(decision == 1)
+    {
+        approveQuotaRequest(request.requester, request.imageName);
+    }
+    else
+    {
+        denyQuotaRequest(request.requester, request.imageName);
+    }
+}
+
+void Peer::denyQuotaRequest(string otherpeer, string imageName)
+{
+    pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
+    if (peerToAddress == make_pair(0U, 0U))
+    {
+        cout << "There's no peer record with such name in the broker\n";
+        return;
+    }
+
+    cout << "Peer Address was received successfully, setting image quota...\n";
+    this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
+
+    string args = string("0") + separator + username + separator + imageName + separator + "0";
+    Message *toBeSent = new Message(APPROVE_QUOTA, stringToCharPtr(args), args.length(), (this->rpcID)++);
+    toBeSent->setMessageType(Request);
+
+    if (this->execute(toBeSent))
+    {
+        int rpc_id = toBeSent->getRPCId();
+        Message *received = this->rpcToMsg[rpc_id];
+        this->rpcToMsg.erase(rpc_id);
+        string content = string((char *)received->getMessage(), received->getMessageSize());
+
+        
+        // Don't care about the response: it's an order
+        delete received;
+    }
+    else
+    {
+        cout << "Denying Image Quota Request operation timed out!\n";
+    }
+}
+
+
+void Peer::approveQuotaRequest(string otherpeer, string imageName, int quota)
+{
+
+    string args = string("1") + separator + username + separator + imageName;
+    sendRequest();
+
+}
+
+void Peer::sendRequest(opType operation, string otherpeer, string args)
+{
+    pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
+    if (peerToAddress == make_pair(0U, 0U))
+    {
+        cout << "There's no peer record with such name in the broker\n";
+        return;
+    }
+
+    cout << "Peer Address was received successfully, setting image quota...\n";
+    this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
+
+    Message *toBeSent = new Message(operation, stringToCharPtr(args), args.length(), (this->rpcID)++);
+    toBeSent->setMessageType(Request);
+
+    if (this->execute(toBeSent))
+    {
+        int rpc_id = toBeSent->getRPCId();
+        Message *received = this->rpcToMsg[rpc_id];
+        this->rpcToMsg.erase(rpc_id);
+        string content = string((char *)received->getMessage(), received->getMessageSize());
+        
+        // Don't care about the response: it's an order
+        delete received;
+    }
+    else
+    {
+        cout << "Operation " << int(operation) << " timed out!\n";
+    }
+}
+
+// ------------------------------------------------
+
 
 Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
 {
@@ -490,15 +632,18 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
         switch (op)
         {
         case REQUEST_IMAGE:
-        {
-            msgBody = "1";  // Request received
+        {   
             string other_username = VectorToString(args[0]);
             string title = VectorToString(args[1]);
             filter(title);
             int quota = stoi(VectorToString(args[2]));
-            vector<Image> img;
-            img.push_back(loadMyImage(title, quota));
-            msgBody = VectorToString(flattenImages(img));
+            
+            imageQuotaRequest request(other_username, title, quota);
+            quotaRequests.push_back(request);
+            
+            msgBody = "1";  // Request received
+            
+            
             //SaveQuotaRecord(other_username, title, quota);
             break;
         }
@@ -515,7 +660,9 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
         }
         case APPROVE_QUOTA:
         {
-            
+            vector<Image> img;
+            img.push_back(loadMyImage(title, quota));
+            msgBody = VectorToString(flattenImages(img));
             break;
         }
         case GET_USER_TITLES:
