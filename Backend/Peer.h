@@ -43,7 +43,8 @@ enum opType
     REQUEST_IMAGE,
     REQUEST_QUOTA,
     SET_QUOTA,
-    APPROVE_QUOTA,
+    ANSWER_QUOTA_REQUEST,
+    ANSWER_IMAGE_REQUEST,
     GET_USER_TITLES_CALLBACK,
     REQUEST_IMAGE_CALLBACK,
     REQUEST_QUOTA_CALLBACK,
@@ -75,6 +76,7 @@ public:
     Message *doOperation(Message *_received, IP user_ip, Port user_port);
 
     void viewGrantedImage(string imageName);
+    void setQuotaGrantedImage(string imageName);
     void clearTempImages();
 
     Image loadMyImage(string path, int quota);
