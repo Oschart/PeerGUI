@@ -36,7 +36,7 @@ string flatten(vector<string> args);
 string addUsertoName(string imageName, string user);
 
 
-string removeUserfromName(string imageName);
+string removeUserfromName(string& imageName);
 
 
 vector<Image> extractImages(vector<uint8_t> &data);

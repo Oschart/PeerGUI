@@ -79,7 +79,7 @@ string addUsertoName(string imageName, string user){
 string removeUserfromName(string& imageName){
     int lastDot = imageName.find_last_of(".");
     int lastUnderscore = imageName.find_last_of("_");
-    string username = imageName.substr(lastUnderscore, lastDot - lastUnderscore);
+    string username = imageName.substr(lastUnderscore + 1, lastDot - lastUnderscore - 1);
     imageName.erase(lastUnderscore, lastDot - lastUnderscore);
     return username;
 }
