@@ -273,6 +273,8 @@ int Peer::getUserPreviews(string otherpeer)
             string path = PREVIEWS + storedImageTitle;
             //this->imageToPeer[imageTitle] = previews[i].getOwner();
             Image::writeImage(path, previews[i].getContent());
+            tempImages.push_back(path);
+
         }
         res = 1;
         delete received;
