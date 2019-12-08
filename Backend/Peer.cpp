@@ -209,7 +209,7 @@ int Peer::getPreviews()
     return res;
 }
 
-vector<string> Peer::getAllUsers()
+int Peer::getAllUsers(vector<string> &usernames)
 {
     this->udpSocket->initializeClient(brokerIP, brokerPort);
     string args = this->sessionToken;
@@ -225,31 +225,18 @@ vector<string> Peer::getAllUsers()
         cout << "PREVIEWS RECEIVED\n";
         vector<uint8_t> flatArgs = Image::charPtrToVector((char *)received->getMessage(), received->getMessageSize());
 
-        vector<Image> previews = extractImages(flatArgs);
-
-        for (int i = 0; i < previews.size(); i++)
-        {
-            cout << "OWNER ====> " << previews[i].getOwner() << endl;
-            string storedImageTitle = addUsertoName(previews[i].getTitle(), previews[i].getOwner());
-
-            string path = PREVIEWS + storedImageTitle;
-            Image::writeImage(path, previews[i].getContent());
-
-            cout << "Image Title = " << storedImageTitle << endl;
-            
-            //appendFileAndCache(Previews_db, previewsTitles, storedImageTitle);
-            tempImages.push_back(path);
-        }
-
+        usernames = extractArgs(VectorToString(flatArgs));
+        
         delete received;
+        res = 1;
     }
     else
     { //the waiting thread timed out
-        cout << "Get Previews operation timed out!\n";
+        cout << "Get all users operation timed out!\n";
         res = -1;
     }
     delete toBeSent;
-    return vector<string>(0);
+    return res;
 }
 
 int Peer::getUserPreviews(string otherpeer)
