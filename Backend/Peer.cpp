@@ -208,6 +208,49 @@ int Peer::getPreviews()
     return res;
 }
 
+vector<string> Peer::getAllUsers()
+{
+    this->udpSocket->initializeClient(brokerIP, brokerPort);
+    string args = this->sessionToken;
+    Message *toBeSent = new Message(GET_PREVIEW_FEED, stringToCharPtr(args), args.length(), (this->rpcID)++);
+    toBeSent->setMessageType(Request);
+    int res;
+    if (this->execute(toBeSent))
+    {
+        res = 1;
+        int rpc_id = toBeSent->getRPCId();
+        Message *received = this->rpcToMsg[rpc_id];
+        this->rpcToMsg.erase(rpc_id);
+        cout << "PREVIEWS RECEIVED\n";
+        vector<uint8_t> flatArgs = Image::charPtrToVector((char *)received->getMessage(), received->getMessageSize());
+
+        vector<Image> previews = extractImages(flatArgs);
+
+        for (int i = 0; i < previews.size(); i++)
+        {
+            cout << "OWNER ====> " << previews[i].getOwner() << endl;
+            string storedImageTitle = addUsertoName(previews[i].getTitle(), previews[i].getOwner());
+
+            string path = PREVIEWS + storedImageTitle;
+            Image::writeImage(path, previews[i].getContent());
+
+            cout << "Image Title = " << storedImageTitle << endl;
+            
+            //appendFileAndCache(Previews_db, previewsTitles, storedImageTitle);
+            tempImages.push_back(path);
+        }
+
+        delete received;
+    }
+    else
+    { //the waiting thread timed out
+        cout << "Get Previews operation timed out!\n";
+        res = -1;
+    }
+    delete toBeSent;
+    return vector<string>(0);
+}
+
 int Peer::getUserPreviews(string otherpeer)
 {
 

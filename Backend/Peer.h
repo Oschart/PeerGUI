@@ -49,6 +49,7 @@ enum opType
     GET_USER_PREVIEW,
     UPLOAD_PREVIEW,
     SYNC_QUOTA,
+    GET_ALL_USERS,
     GET_USER_TITLES,
     REQUEST_IMAGE,
     REQUEST_QUOTA,
@@ -58,7 +59,8 @@ enum opType
     GET_USER_TITLES_CALLBACK,
     REQUEST_IMAGE_CALLBACK,
     REQUEST_QUOTA_CALLBACK,
-    SET_QUOTA_CALLBACK
+    SET_QUOTA_CALLBACK,
+
 };
 
 using namespace std;
@@ -87,6 +89,8 @@ public:
     int getPreviews();
     int getUserPreviews(string otherpeer);
 
+    vector<string> getAllUsers();
+
     void getUserTitles(string otherpeer);
     //void getUserTitlesCallback(string otherpeer);
 
@@ -114,6 +118,9 @@ public:
     Image loadMyImage(string path, int quota);
     string getMyTitles();
     void uploadLocalImage(string path);
+    
+    vector<imageQuotaRequest> quotaRequests;
+    vector<imageQuotaRequest> imageRequests;
     ~Peer();
 
 private:
@@ -128,8 +135,7 @@ private:
     atomic<int> rpcID;
     //map<string, string> imageToPeer;
 
-    vector<imageQuotaRequest> quotaRequests;
-    vector<imageQuotaRequest> imageRequests;
+    
 
     pair<IP, Port> getAddress(string otherPeer);
     void listenerRun();
