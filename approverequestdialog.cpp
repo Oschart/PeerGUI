@@ -2,14 +2,15 @@
 #include "ui_approverequestdialog.h"
 #include <iostream>
 
-ApproveRequestDialog::ApproveRequestDialog(std::string _req, std::string _img, int _q, QWidget *parent) :
+ApproveRequestDialog::ApproveRequestDialog(bool _new, std::string _req, std::string _img, int _q, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ApproveRequestDialog), requester(_req), imageName(_img), quota(_q)
+    ui(new Ui::ApproveRequestDialog), requester(_req), imageName(_img), quota(_q), newImage(_new)
 
 {
     ui->setupUi(this);
-
-    ui->label->setText(std::string("Do you agree to give " + requester + " a quota of " + std::to_string(quota) + " to your image " + imageName + "?").c_str());
+    std::string msg = newImage? "Do you agree to give " + requester + " a quota of " + std::to_string(quota) + " to your image " + imageName + "?":
+                                "Do you agree to update " + requester + " to a quota of " + std::to_string(quota) + " to your granted image " + imageName + "?";
+    ui->label->setText(msg.c_str());
 }
 
 ApproveRequestDialog::~ApproveRequestDialog()

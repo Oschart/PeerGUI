@@ -46,6 +46,8 @@ private slots:
 
     void on_listWidget_itemClicked(QListWidgetItem *item);
 
+    void on_listWidget_2_itemClicked(QListWidgetItem *item);
+
 private:
     Ui::home *ui;
 };
