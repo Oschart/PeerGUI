@@ -4,6 +4,7 @@
 #include "visitprofile.h"
 #include "imagelargepreview.h"
 #include "requestimagedialog.h"
+#include "approverequestdialog.h"
 #include <QTextStream>
 #include <QMessageBox>
 #include <iostream>
@@ -96,7 +97,6 @@ void home::on_pushButton_13_clicked()
     if (username != ""){
         visitProfile * vp = new visitProfile(username);
         vp->show();
-
     }
 
 
@@ -161,19 +161,47 @@ void home::on_listView_itemClicked(QListWidgetItem *item)
 void home::on_pushButton_7_clicked()
 {
     ui->stackedWidget->setCurrentIndex(4);
-    QDir directory(PREVIEWS);
-    QStringList images = directory.entryList(QStringList() ,QDir::Files);
-    foreach(QString filename, images) {
-        string orig = filename.toUtf8().constData();
-        string user = removeUserfromName(orig);
-        QListWidgetItem* item = new QListWidgetItem(QIcon(PREVIEWS + filename), (orig).c_str());
-        item->setData(Qt::UserRole, user.c_str());
-        ui->listView->addItem(item);
+    auto requests = peer.imageRequests;
+    requests.push_back(imageQuotaRequest("Fadi", "7ama.jpg", 7));
+    requests.push_back(imageQuotaRequest("Eslam", "7ama2.jpg", 11));
+
+    foreach(auto request, requests){
+        string item =(string("The user ") + request.requester + string(" has requested ") + to_string(request.quota) + string(" views of your image ") + request.imageName);
+        //auto item = "hi there";
+//        cout << request.requester << endl;
+//        cout << request.imageName << endl;
+//        cout << item << endl;
+        auto widg = new QListWidgetItem(item.c_str());
+        widg->setData(Qt::UserRole, request.requester.c_str());
+        widg->setData(Qt::DecorationRole, request.quota);
+        widg->setData(Qt::DisplayPropertyRole, request.imageName.c_str());
+
+        ui->listWidget->addItem(widg);
     }
+
+//    QDir directory(PREVIEWS);
+//    QStringList images = directory.entryList(QStringList() ,QDir::Files);
+//    foreach(QString filename, images) {
+//        string orig = filename.toUtf8().constData();
+//        string user = removeUserfromName(orig);
+//        QListWidgetItem* item = new QListWidgetItem(QIcon(PREVIEWS + filename), (orig).c_str());
+//        item->setData(Qt::UserRole, user.c_str());
+//        ui->listView->addItem(item);
+//    }
 
 }
 
-void home::on_pushButton_9_clicked()
+
+void home::on_listWidget_itemClicked(QListWidgetItem *item)
 {
+    cout << "hi there" << endl;
+    string requester = item->data(Qt::UserRole).toString().toUtf8().constData();
+    string imageName = item->data(Qt::DisplayPropertyRole).toString().toUtf8().constData();
+    int quota = item->data(Qt::DecorationRole).toInt();
+
+    ApproveRequestDialog * dlg = new ApproveRequestDialog(requester, imageName, quota);
+    dlg->show();
+
+
 
 }
