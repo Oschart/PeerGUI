@@ -33,7 +33,10 @@ SOURCES += \
     visitprofile.cpp \
     imagelargepreview.cpp \
     requestimagedialog.cpp \
-    approverequestdialog.cpp
+    approverequestdialog.cpp \
+    grantedimageslist.cpp \
+    viewgrantedimagedialog.cpp \
+    grantedimagepreview.cpp
 
 HEADERS += \
     Backend/Image.h \
@@ -53,7 +56,10 @@ HEADERS += \
     visitprofile.h \
     imagelargepreview.h \
     requestimagedialog.h \
-    approverequestdialog.h
+    approverequestdialog.h \
+    grantedimageslist.h \
+    viewgrantedimagedialog.h \
+    grantedimagepreview.h
 
 FORMS += \
     browser.ui \
@@ -64,7 +70,10 @@ FORMS += \
     visitprofile.ui \
     imagelargepreview.ui \
     requestimagedialog.ui \
-    approverequestdialog.ui
+    approverequestdialog.ui \
+    grantedimageslist.ui \
+    viewgrantedimagedialog.ui \
+    grantedimagepreview.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

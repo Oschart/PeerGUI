@@ -5,6 +5,7 @@
 #include "imagelargepreview.h"
 #include "requestimagedialog.h"
 #include "approverequestdialog.h"
+#include "grantedimageslist.h"
 #include <QTextStream>
 #include <QMessageBox>
 #include <iostream>
@@ -75,10 +76,6 @@ void home::on_pushButton_8_clicked()
     }
     else {
         ui->stackedWidget->setCurrentIndex(1);
-    //    vector<string> users;
-    //    users.push_back("fadi");
-    //    users.push_back("a");
-    //    users.push_back("Oscar");
         ui->comboBox->clear();
         for (auto s : users)  ui->comboBox->addItem(tr(s.c_str()));
     }
@@ -159,8 +156,6 @@ void home::on_pushButton_7_clicked()
     ui->stackedWidget->setCurrentIndex(4);
     ui->listWidget->clear();
     auto requests = peer.imageRequests;
-//    requests.push_back(imageQuotaRequest("Fadi", "7ama.jpg", 7));
-//    requests.push_back(imageQuotaRequest("Eslam", "7ama2.jpg", 11));
     foreach(auto request, requests){
         string item =(string("The user ") + request.requester + string(" has requested ") + to_string(request.quota) + string(" views of your image ") + request.imageName);
         auto widg = new QListWidgetItem(item.c_str());
@@ -172,8 +167,6 @@ void home::on_pushButton_7_clicked()
     }
     ui->listWidget_2->clear();
     requests = peer.quotaRequests;
-//    requests.push_back(imageQuotaRequest("Mohamed", "7ama3.jpg", 69));
-//    requests.push_back(imageQuotaRequest("Ahmed", "7ama4.jpg", 420));
     foreach(auto request, requests){
         string item =(string("The user ") + request.requester + string(" has requested ") + to_string(request.quota) + string(" extra views of your granted image ") + request.imageName);
         auto widg = new QListWidgetItem(item.c_str());
@@ -212,4 +205,11 @@ void home::on_listWidget_2_itemClicked(QListWidgetItem *item)
 
     ApproveRequestDialog * dlg = new ApproveRequestDialog(false, requester, imageName, quota);
     dlg->show();
+}
+
+void home::on_pushButton_4_clicked()
+{
+    GrantedImagesList * gil = new GrantedImagesList;
+    gil->show();
+
 }
