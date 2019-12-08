@@ -149,7 +149,7 @@ pair<IP, Port> Peer::getAddress(string otherPeer)
             if (args.size() == 2)
             {
                 cout << "Received IP and port\n";
-                return make_pair(unsigned(stoi(args[0])), unsigned(stoi(args[1])));
+                return make_pair(unsigned(stoll(args[0])), unsigned(stoll(args[1])));
             }
             else
             {
@@ -276,6 +276,7 @@ int Peer::getUserPreviews(string otherpeer)
         Message *received = this->rpcToMsg[rpc_id];
         this->rpcToMsg.erase(rpc_id);
         cout << "USER PREVIEWS RECEIVED\n";
+        
         vector<uint8_t> flatArgs = Image::charPtrToVector((char *)received->getMessage(), received->getMessageSize());
         vector<Image> previews = extractImages(flatArgs);
         for (int i = 0; i < previews.size(); i++)
@@ -637,7 +638,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             string other_username = VectorToString(args[0]);
             string title = VectorToString(args[1]);
             filter(title);
-            int quota = stoi(VectorToString(args[2]));
+            int quota = stoll(VectorToString(args[2]));
             
             imageQuotaRequest request(other_username, title, quota);
             imageRequests.push_back(request);
@@ -674,7 +675,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             string other_username = VectorToString(args[0]);
             string title = VectorToString(args[1]);
             filter(title);
-            int quota = stoi(VectorToString(args[2]));
+            int quota = stoll(VectorToString(args[2]));
             
             imageQuotaRequest request(other_username, title, quota);
             quotaRequests.push_back(request);
@@ -693,7 +694,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             string imageName = VectorToString(args[1]);
 
             string image_name = addUsertoName(imageName, sender);
-            int quota = stoi(VectorToString(args[2]));
+            int quota = stoll(VectorToString(args[2]));
             setQuotaGrantedImage(image_name, quota);
             msgBody = "1";  // Request received
             break;
@@ -706,7 +707,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             
             if(response == "1"){
                 cout << "Quota request approved\n";
-                int quota = stoi(VectorToString(args[3]));
+                int quota = stoll(VectorToString(args[3]));
                 string full_image_name = addUsertoName(imageName, sender);
                 setQuotaGrantedImage(full_image_name,quota);
             }
