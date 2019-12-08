@@ -50,16 +50,17 @@ enum opType
     UPLOAD_PREVIEW,
     SYNC_QUOTA,
     GET_ALL_USERS,
-    GET_USER_TITLES,
+    GET_USER_PREVIEWS,
     REQUEST_IMAGE,
     REQUEST_QUOTA,
     SET_QUOTA,
+    CACHE_MSG,
     ANSWER_QUOTA_REQUEST,
     ANSWER_IMAGE_REQUEST,
-    GET_USER_TITLES_CALLBACK,
-    REQUEST_IMAGE_CALLBACK,
-    REQUEST_QUOTA_CALLBACK,
-    SET_QUOTA_CALLBACK,
+    GET_USER_TITLES_CALLBACK,   // (token, receiver, Operation) no args
+    REQUEST_IMAGE_CALLBACK,     // (token, receiver, Operation) username + separator + imageName + separator + to_string(quota)
+    REQUEST_QUOTA_CALLBACK,     // (token, receiver, Operation) username + separator + imageName + separator + to_string(quota)
+    SET_QUOTA_CALLBACK,         // (token, receiver, Operation) username + separator + imageName + separator + to_string(quota)
 
 };
 
@@ -91,7 +92,7 @@ public:
 
     vector<string> getAllUsers();
 
-    void getUserTitles(string otherpeer);
+    //void getUserImages(string otherpeer);
     //void getUserTitlesCallback(string otherpeer);
 
     int uploadImagePreview(string imageName, string imagePath);
@@ -117,6 +118,7 @@ public:
 
     Image loadMyImage(string path, int quota);
     string getMyTitles();
+    string getMyImages();
     void uploadLocalImage(string path);
     
     vector<imageQuotaRequest> quotaRequests;
