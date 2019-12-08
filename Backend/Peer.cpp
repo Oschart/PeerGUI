@@ -17,6 +17,7 @@ Peer::Peer(char *_myHostname, int _myPort, char *_shostname, int _sport) : Serve
     argCount[SET_QUOTA] = 3;
     argCount[ANSWER_QUOTA_REQUEST] = 4;
     argCount[ANSWER_IMAGE_REQUEST] = 4;
+    argCount[GET_USER_PREVIEWS] = 0;
 
 }
 
@@ -251,12 +252,20 @@ vector<string> Peer::getAllUsers()
     return vector<string>(0);
 }
 
-int Peer::getUserPreviews(string otherpeer)
+void Peer::getUserPreviews(string otherpeer)
 {
 
-    this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
+    pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
+    if (peerToAddress == make_pair(0U, 0U))
+    {
+        cout << "There's no peer record with such name in the broker\n";
+        return;
+    }
+    cout << "Peer Address was received successfully, getting previews...\n";
+    this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
 
-    string args = this->sessionToken + separator + otherpeer;
+    //string args = this->sessionToken + separator + otherpeer;
+    string args = "";
     Message *toBeSent = new Message(GET_USER_PREVIEW, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
     int res;
@@ -287,7 +296,7 @@ int Peer::getUserPreviews(string otherpeer)
     return res;
 }
 
-void Peer::getUserTitles(string otherpeer)
+void Peer::getUserPreviews(string otherpeer)
 {
     pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
     if (peerToAddress == make_pair(0U, 0U))
@@ -299,7 +308,7 @@ void Peer::getUserTitles(string otherpeer)
     this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
 
     string args = this->username;
-    Message *toBeSent = new Message(GET_USER_TITLES, stringToCharPtr(args), args.length(), (this->rpcID)++);
+    Message *toBeSent = new Message(GET_USER_PREVIEWS, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
     if (this->execute(toBeSent))
     {
@@ -428,7 +437,7 @@ void Peer::requestImageQuota(string otherpeer, string imageName, int quota)
     cout << "Peer Address was received successfully, requesting image quota...\n";
     this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
 
-    string args = imageName + separator + to_string(quota);
+    string args = username + separator + imageName + separator + to_string(quota);
     Message *toBeSent = new Message(REQUEST_QUOTA, stringToCharPtr(args), args.length(), (this->rpcID)++);
 
     toBeSent->setMessageType(Request);
@@ -475,7 +484,7 @@ void Peer::setImageQuota(string otherpeer, string imageName, int quota)
     cout << "Peer Address was received successfully, setting image quota...\n";
     this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
 
-    string args = otherpeer + separator + imageName + separator + to_string(quota);
+    string args = username + separator + imageName + separator + to_string(quota);
     Message *toBeSent = new Message(SET_QUOTA, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
     if (this->execute(toBeSent))
@@ -710,9 +719,9 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             msgBody = "1";  // Request received
             break;
         }
-        case GET_USER_TITLES:
+        case GET_USER_PREVIEWS:
         {
-            msgBody = getMyTitles();
+            msgBody = getMyImages();
             break;
         }
         default:
@@ -784,15 +793,21 @@ Image Peer::loadMyImage(string title, int quota)
     return img;
 }
 
-string Peer::getMyTitles()
+string Peer::getMyImages()
 {
     string titles = "";
     QDir directory(MyImages);
+    vector<Image> previews;
     QStringList images = directory.entryList(QStringList() ,QDir::Files);
     foreach(QString filename, images) {
-        titles += filename.toUtf8().constData() + string(",");
+        title = filename.toUtf8().constData();
+        string dir = MyImages + string("/") + title;
+        int size;
+        Image preview(DEF_IMG(size), Image::readImage(dir, size), username, 0);
+        preview.setTitle(title);
+        previews.push_back(preview);
     }
-    titles.pop_back();
+    return VectorToString(flattenImages(previews));
 }
 
 void Peer::uploadLocalImage(string path)
