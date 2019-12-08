@@ -149,7 +149,7 @@ pair<IP, Port> Peer::getAddress(string otherPeer)
             if (args.size() == 2)
             {
                 cout << "Received IP and port\n";
-                return make_pair(unsigned(stoi(args[0])), unsigned(stoi(args[1])));
+                return make_pair(unsigned(stoll(args[0])), unsigned(stoll(args[1])));
             }
             else
             {
@@ -209,11 +209,11 @@ int Peer::getPreviews()
     return res;
 }
 
-vector<string> Peer::getAllUsers()
+int Peer::getAllUsers(vector<string> &usernames)
 {
     this->udpSocket->initializeClient(brokerIP, brokerPort);
     string args = this->sessionToken;
-    Message *toBeSent = new Message(GET_PREVIEW_FEED, stringToCharPtr(args), args.length(), (this->rpcID)++);
+    Message *toBeSent = new Message(GET_ALL_USERS, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
     int res;
     if (this->execute(toBeSent))
@@ -225,41 +225,28 @@ vector<string> Peer::getAllUsers()
         cout << "PREVIEWS RECEIVED\n";
         vector<uint8_t> flatArgs = Image::charPtrToVector((char *)received->getMessage(), received->getMessageSize());
 
-        vector<Image> previews = extractImages(flatArgs);
-
-        for (int i = 0; i < previews.size(); i++)
-        {
-            cout << "OWNER ====> " << previews[i].getOwner() << endl;
-            string storedImageTitle = addUsertoName(previews[i].getTitle(), previews[i].getOwner());
-
-            string path = PREVIEWS + storedImageTitle;
-            Image::writeImage(path, previews[i].getContent());
-
-            cout << "Image Title = " << storedImageTitle << endl;
-            
-            //appendFileAndCache(Previews_db, previewsTitles, storedImageTitle);
-            tempImages.push_back(path);
-        }
-
+        usernames = extractArgs(VectorToString(flatArgs));
+        
         delete received;
+        res = 1;
     }
     else
     { //the waiting thread timed out
-        cout << "Get Previews operation timed out!\n";
+        cout << "Get all users operation timed out!\n";
         res = -1;
     }
     delete toBeSent;
-    return vector<string>(0);
+    return res;
 }
 
-void Peer::getUserPreviews(string otherpeer)
+int Peer::getUserPreviews(string otherpeer)
 {
 
     pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
     if (peerToAddress == make_pair(0U, 0U))
     {
         cout << "There's no peer record with such name in the broker\n";
-        return;
+        return 0;
     }
     cout << "Peer Address was received successfully, getting previews...\n";
     this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
@@ -276,7 +263,9 @@ void Peer::getUserPreviews(string otherpeer)
         Message *received = this->rpcToMsg[rpc_id];
         this->rpcToMsg.erase(rpc_id);
         cout << "USER PREVIEWS RECEIVED\n";
+        
         vector<uint8_t> flatArgs = Image::charPtrToVector((char *)received->getMessage(), received->getMessageSize());
+        
         vector<Image> previews = extractImages(flatArgs);
         for (int i = 0; i < previews.size(); i++)
         {
@@ -634,7 +623,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             string other_username = VectorToString(args[0]);
             string title = VectorToString(args[1]);
             filter(title);
-            int quota = stoi(VectorToString(args[2]));
+            int quota = stoll(VectorToString(args[2]));
             
             imageQuotaRequest request(other_username, title, quota);
             imageRequests.push_back(request);
@@ -671,7 +660,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             string other_username = VectorToString(args[0]);
             string title = VectorToString(args[1]);
             filter(title);
-            int quota = stoi(VectorToString(args[2]));
+            int quota = stoll(VectorToString(args[2]));
             
             imageQuotaRequest request(other_username, title, quota);
             quotaRequests.push_back(request);
@@ -690,7 +679,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             string imageName = VectorToString(args[1]);
 
             string image_name = addUsertoName(imageName, sender);
-            int quota = stoi(VectorToString(args[2]));
+            int quota = stoll(VectorToString(args[2]));
             setQuotaGrantedImage(image_name, quota);
             msgBody = "1";  // Request received
             break;
@@ -703,7 +692,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             
             if(response == "1"){
                 cout << "Quota request approved\n";
-                int quota = stoi(VectorToString(args[3]));
+                int quota = stoll(VectorToString(args[3]));
                 string full_image_name = addUsertoName(imageName, sender);
                 setQuotaGrantedImage(full_image_name,quota);
             }
@@ -797,13 +786,14 @@ string Peer::getMyImages()
     vector<Image> previews;
     QStringList images = directory.entryList(QStringList() ,QDir::Files);
     foreach(QString filename, images) {
-        title = filename.toUtf8().constData();
-        string dir = MyImages + string("/") + title;
+        string title = filename.toUtf8().constData();
+        string dir = MyImages + title;
         int size;
         Image preview(DEF_IMG(size), Image::readImage(dir, size), username, 0);
         preview.setTitle(title);
         previews.push_back(preview);
     }
+    cout << "Titles = " << titles << endl;
     return VectorToString(flattenImages(previews));
 }
 

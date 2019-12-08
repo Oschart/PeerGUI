@@ -115,7 +115,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Upload Image</string>
+      <string>Add Image</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_4">

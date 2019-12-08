@@ -29,6 +29,7 @@ visitProfile::visitProfile(std::string user, QWidget *parent) :
                 ui->listView->addItem(item);
             }
         }
+        cout << "I will clear temp images" << endl;
         peer.clearTempImages();
     }
 

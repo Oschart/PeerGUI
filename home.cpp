@@ -4,6 +4,7 @@
 #include "visitprofile.h"
 #include "imagelargepreview.h"
 #include "requestimagedialog.h"
+#include "approverequestdialog.h"
 #include <QTextStream>
 #include <QMessageBox>
 #include <iostream>
@@ -67,36 +68,31 @@ void home::on_pushButton_2_clicked()
 
 void home::on_pushButton_8_clicked()
 {
-    ui->stackedWidget->setCurrentIndex(1);
+    vector<string> users;
+    int res = peer.getAllUsers(users);
+    if (res == -1){
+        if (res == -1)  QMessageBox::information (this, "User Search", "Could not connect to the server");
+    }
+    else {
+        ui->stackedWidget->setCurrentIndex(1);
+    //    vector<string> users;
+    //    users.push_back("fadi");
+    //    users.push_back("a");
+    //    users.push_back("Oscar");
+        ui->comboBox->clear();
+        for (auto s : users)  ui->comboBox->addItem(tr(s.c_str()));
+    }
 }
 
 
 
 void home::on_pushButton_13_clicked()
 {
-//    QString username = ui->lineEdit_2->text();
 
-//    QFile inputFile("/home/wan/DS_GUI1/profileName.txt");
-//    if (inputFile.open(QIODevice::ReadOnly))
-//    {
-//       QTextStream in(&inputFile);
-//       while (!in.atEnd())
-//       {
-//          QString line = in.readLine();
-//          if(username == line) {
-//              visitProfile *wdg = new visitProfile;
-//              wdg->show();
-//              //close()
-//          }
-//       }
-//       inputFile.close();
-//    }
-
-    string username = ui->lineEdit_2->text().toUtf8().constData();
+    string username = ui->comboBox->currentText().toUtf8().constData();
     if (username != ""){
         visitProfile * vp = new visitProfile(username);
         vp->show();
-
     }
 
 
@@ -161,19 +157,59 @@ void home::on_listView_itemClicked(QListWidgetItem *item)
 void home::on_pushButton_7_clicked()
 {
     ui->stackedWidget->setCurrentIndex(4);
-    QDir directory(PREVIEWS);
-    QStringList images = directory.entryList(QStringList() ,QDir::Files);
-    foreach(QString filename, images) {
-        string orig = filename.toUtf8().constData();
-        string user = removeUserfromName(orig);
-        QListWidgetItem* item = new QListWidgetItem(QIcon(PREVIEWS + filename), (orig).c_str());
-        item->setData(Qt::UserRole, user.c_str());
-        ui->listView->addItem(item);
+    ui->listWidget->clear();
+    auto requests = peer.imageRequests;
+//    requests.push_back(imageQuotaRequest("Fadi", "7ama.jpg", 7));
+//    requests.push_back(imageQuotaRequest("Eslam", "7ama2.jpg", 11));
+    foreach(auto request, requests){
+        string item =(string("The user ") + request.requester + string(" has requested ") + to_string(request.quota) + string(" views of your image ") + request.imageName);
+        auto widg = new QListWidgetItem(item.c_str());
+        widg->setData(Qt::UserRole, request.requester.c_str());
+        widg->setData(Qt::DecorationRole, request.quota);
+        widg->setData(Qt::DisplayPropertyRole, request.imageName.c_str());
+
+        ui->listWidget->addItem(widg);
     }
+    ui->listWidget_2->clear();
+    requests = peer.quotaRequests;
+//    requests.push_back(imageQuotaRequest("Mohamed", "7ama3.jpg", 69));
+//    requests.push_back(imageQuotaRequest("Ahmed", "7ama4.jpg", 420));
+    foreach(auto request, requests){
+        string item =(string("The user ") + request.requester + string(" has requested ") + to_string(request.quota) + string(" extra views of your granted image ") + request.imageName);
+        auto widg = new QListWidgetItem(item.c_str());
+        widg->setData(Qt::UserRole, request.requester.c_str());
+        widg->setData(Qt::DecorationRole, request.quota);
+        widg->setData(Qt::DisplayPropertyRole, request.imageName.c_str());
+
+        ui->listWidget_2->addItem(widg);
+    }
+
+
 
 }
 
-void home::on_pushButton_9_clicked()
-{
 
+void home::on_listWidget_itemClicked(QListWidgetItem *item)
+{
+    cout << "hi there" << endl;
+    string requester = item->data(Qt::UserRole).toString().toUtf8().constData();
+    string imageName = item->data(Qt::DisplayPropertyRole).toString().toUtf8().constData();
+    int quota = item->data(Qt::DecorationRole).toInt();
+
+    ApproveRequestDialog * dlg = new ApproveRequestDialog(true, requester, imageName, quota);
+    dlg->show();
+
+
+
+}
+
+void home::on_listWidget_2_itemClicked(QListWidgetItem *item)
+{
+    cout << "hi there" << endl;
+    string requester = item->data(Qt::UserRole).toString().toUtf8().constData();
+    string imageName = item->data(Qt::DisplayPropertyRole).toString().toUtf8().constData();
+    int quota = item->data(Qt::DecorationRole).toInt();
+
+    ApproveRequestDialog * dlg = new ApproveRequestDialog(false, requester, imageName, quota);
+    dlg->show();
 }
