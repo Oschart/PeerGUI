@@ -213,7 +213,7 @@ int Peer::getAllUsers(vector<string> &usernames)
 {
     this->udpSocket->initializeClient(brokerIP, brokerPort);
     string args = this->sessionToken;
-    Message *toBeSent = new Message(GET_PREVIEW_FEED, stringToCharPtr(args), args.length(), (this->rpcID)++);
+    Message *toBeSent = new Message(GET_ALL_USERS, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
     int res;
     if (this->execute(toBeSent))

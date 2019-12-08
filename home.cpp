@@ -68,13 +68,20 @@ void home::on_pushButton_2_clicked()
 
 void home::on_pushButton_8_clicked()
 {
-    ui->stackedWidget->setCurrentIndex(1);
     vector<string> users;
-    users.push_back("fadi");
-    users.push_back("a");
-    users.push_back("Oscar");
-    ui->comboBox->clear();
-    for (auto s : users)  ui->comboBox->addItem(tr(s.c_str()));
+    int res = peer.getAllUsers(users);
+    if (res == -1){
+        if (res == -1)  QMessageBox::information (this, "User Search", "Could not connect to the server");
+    }
+    else {
+        ui->stackedWidget->setCurrentIndex(1);
+    //    vector<string> users;
+    //    users.push_back("fadi");
+    //    users.push_back("a");
+    //    users.push_back("Oscar");
+        ui->comboBox->clear();
+        for (auto s : users)  ui->comboBox->addItem(tr(s.c_str()));
+    }
 }
 
 
