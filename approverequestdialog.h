@@ -12,7 +12,7 @@ class ApproveRequestDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ApproveRequestDialog(std::string ,std::string, int, QWidget *parent = nullptr);
+    explicit ApproveRequestDialog(bool, std::string ,std::string, int, QWidget *parent = nullptr);
     ~ApproveRequestDialog();
 
 private slots:
@@ -25,6 +25,7 @@ private:
     std::string requester;
     std::string imageName;
     int quota;
+    bool newImage;
 };
 
 #endif // APPROVEREQUESTDIALOG_H
