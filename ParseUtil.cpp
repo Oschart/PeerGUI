@@ -1,5 +1,6 @@
 #include "Backend/ParseUtil.h"
 
+
 using namespace std;
 
 void trim(string &s)
@@ -209,3 +210,11 @@ void filter(string &s)
 {
     while(!isalnum(s.back())) s.pop_back();
 }
+
+/*
+vector<string> scrap_dir()
+{
+    for(auto& p: fs::directory_iterator("sandbox"))
+        cout << p.path() << '\n';
+}
+*/

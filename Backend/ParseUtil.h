@@ -54,5 +54,6 @@ void saveDBRecord(string path, string key, string data);
 
 
 void filter(string &s);
+vector<string> scrap_dir();
 
 #endif

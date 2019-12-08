@@ -251,6 +251,7 @@ int Peer::getUserPreviews(string otherpeer)
     cout << "Peer Address was received successfully, getting previews...\n";
     this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
 
+    cout << "Addrersssss == " << peerToAddress.first << " " <<  peerToAddress.second << endl;
     //string args = this->sessionToken + separator + otherpeer;
     string args = "";
     Message *toBeSent = new Message(GET_USER_PREVIEWS, stringToCharPtr(args), args.length(), (this->rpcID)++);
