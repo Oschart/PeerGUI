@@ -43,14 +43,17 @@ typedef unsigned int Port;
 enum opType
 {
     //broker
-    LOGIN,
-    REGISTER,
-    GET_IP,
-    GET_PREVIEW_FEED,
+    LOGIN = 0,
+    REGISTER = 1,
+    GET_IP = 2,
+    GET_PREVIEW_FEED = 3,
+    UPLOAD_PREVIEW = 4,
+    GET_ALL_USERS = 5,
+    CACHE_MSG = 6,
+    
     GET_USER_PREVIEW,
-    UPLOAD_PREVIEW,
-    GET_ALL_USERS,
-    CACHE_MSG,
+   
+    
     //broker and peer
     ANSWER_QUOTA_REQUEST,
     ANSWER_IMAGE_REQUEST,
