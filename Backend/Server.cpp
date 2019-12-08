@@ -9,7 +9,7 @@ Message *Server::getRequest(unsigned int &peerIP, int& peerPort)
   char *messageBuf = new char[MAX_SIZE];
   int receivedL = this->udpSocket->readSocketWithBlock(messageBuf, MAX_SIZE);
 
-
+  cout << "Got Request\n";
   peerIP = this->udpSocket->getPeerAddressCoded();
   peerPort = this->udpSocket->getPeerPort();
 
