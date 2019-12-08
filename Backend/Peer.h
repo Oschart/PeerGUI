@@ -50,8 +50,6 @@ enum opType
     UPLOAD_PREVIEW = 4,
     GET_ALL_USERS = 5,
     CACHE_MSG = 6,
-    
-    GET_USER_PREVIEW,
    
     
     //broker and peer
