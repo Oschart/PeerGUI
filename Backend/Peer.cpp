@@ -516,6 +516,7 @@ void Peer::answerImageRequest(int request_id, int decision)
     {
         denyImageRequest(request.requester, request.imageName);
     }
+    imageRequests.erase(imageRequests.begin() + request_id);
     
 }
 
@@ -553,6 +554,7 @@ void Peer::answerQuotaRequest(int request_id, int decision)
     {
         denyQuotaRequest(request.requester, request.imageName);
     }
+    quotaRequests.erase(quotaRequests.begin() + request_id);
 }
 
 void Peer::denyQuotaRequest(string otherpeer, string imageName)
