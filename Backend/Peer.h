@@ -42,26 +42,24 @@ typedef unsigned int Port;
 
 enum opType
 {
+    //broker
     LOGIN,
     REGISTER,
     GET_IP,
     GET_PREVIEW_FEED,
     GET_USER_PREVIEW,
     UPLOAD_PREVIEW,
-    SYNC_QUOTA,
-    GET_ALL_USERS = 11,
+    GET_ALL_USERS,
+    CACHE_MSG,
+    //broker and peer
+    ANSWER_QUOTA_REQUEST,
+    ANSWER_IMAGE_REQUEST,
+    ANSWER_SET_QUOTA,
+    //peer
     GET_USER_PREVIEWS,
     REQUEST_IMAGE,
     REQUEST_QUOTA,
-    SET_QUOTA,
-    CACHE_MSG,
-    ANSWER_QUOTA_REQUEST,
-    ANSWER_IMAGE_REQUEST,
-    GET_USER_TITLES_CALLBACK,   // (token, receiver, Operation) no args
-    REQUEST_IMAGE_CALLBACK,     // (token, receiver, Operation) username + separator + imageName + separator + to_string(quota)
-    REQUEST_QUOTA_CALLBACK,     // (token, receiver, Operation) username + separator + imageName + separator + to_string(quota)
-    SET_QUOTA_CALLBACK,         // (token, receiver, Operation) username + separator + imageName + separator + to_string(quota)
-
+    SET_QUOTA
 };
 
 using namespace std;

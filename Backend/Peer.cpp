@@ -265,18 +265,14 @@ int Peer::getUserPreviews(string otherpeer)
         cout << "USER PREVIEWS RECEIVED\n";
         
         vector<uint8_t> flatArgs = Image::charPtrToVector((char *)received->getMessage(), received->getMessageSize());
+        
         vector<Image> previews = extractImages(flatArgs);
         for (int i = 0; i < previews.size(); i++)
         {
             string storedImageTitle = addUsertoName(previews[i].getTitle(), previews[i].getOwner());
-            //imageTitle.pop_back();
             string path = PREVIEWS + storedImageTitle;
-            //this->imageToPeer[imageTitle] = previews[i].getOwner();
             Image::writeImage(path, previews[i].getContent());
-            tempImages.push_back(path);
-
         }
-        res = 1;
         delete received;
     }
     else
@@ -319,8 +315,8 @@ void Peer::getUserPreviews(string otherpeer)
     {
         cout << "Get User Previews operation timed out!\n";
     }
-}*/
-
+}
+*/
 int Peer::uploadImagePreview(string imageName, string imagePath)
 {
     this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
@@ -412,7 +408,12 @@ void Peer::requestImage(string otherpeer, string imageName, int quota)
     }
     else
     {
-        cout << "Request Image operation timed out!\n";
+        cout << "Request Image operation timed out!, will send to the broker\n";
+        string content = string((char *)toBeSent->getMessage(), toBeSent->getMessageSize());
+        content = sessionToken + separator + otherpeer + separator + to_string(REQUEST_IMAGE) + separator + content;
+        toBeSent->setMessage(stringToCharPtr(content), content.length());
+        this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
+        this->execute(toBeSent));
     }
 }
 
@@ -444,21 +445,18 @@ void Peer::requestImageQuota(string otherpeer, string imageName, int quota)
         else
         {
             cout << "Undefined response for quota request\n";
-            /*
-            int sz;
-            string path = GrantedImages + imageName + CODED;
-            Image img = Image(Image::readImage(path, sz));
-            string owner = img.getOwner();
-            img = Image(DEF_IMG(sz), img.getContent(), owner, quota);
-            Image::writeImage(path, img.getCodified());
-            */
         }
 
         delete received;
     }
     else
     {
-        cout << "Request Image Quota operation timed out!\n";
+        cout << "Request Image Quota operation timed out!, will send to the broker\n";
+        string content = string((char *)toBeSent->getMessage(), toBeSent->getMessageSize());
+        content = sessionToken + separator + otherpeer + separator + to_string(REQUEST_QUOTA) + separator + content;
+        toBeSent->setMessage(stringToCharPtr(content), content.length());
+        this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
+        this->execute(toBeSent));
     }
 }
 
@@ -497,7 +495,12 @@ void Peer::setImageQuota(string otherpeer, string imageName, int quota)
     }
     else
     {
-        cout << "Setting Image Quota operation timed out!\n";
+        cout << "Setting Image Quota operation timed out!, will send to the broker\n";
+        string content = string((char *)toBeSent->getMessage(), toBeSent->getMessageSize());
+        content = sessionToken + separator + otherpeer + separator + to_string(SET_QUOTA) + separator + content;
+        toBeSent->setMessage(stringToCharPtr(content), content.length());
+        this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
+        this->execute(toBeSent));
     }
 }
 
@@ -677,6 +680,12 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             msgBody = "1";
             break;
         }
+        case ANSWER_SET_QUOTA:
+        {   
+            cout << "The quota is set\n";
+            msgBody = "1";
+            break;
+        }
         case SET_QUOTA:
         {
             string sender = VectorToString(args[0]);
@@ -797,6 +806,7 @@ string Peer::getMyImages()
         preview.setTitle(title);
         previews.push_back(preview);
     }
+    cout << "Titles = " << titles << endl;
     return VectorToString(flattenImages(previews));
 }
 
