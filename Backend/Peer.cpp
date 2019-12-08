@@ -265,6 +265,7 @@ int Peer::getUserPreviews(string otherpeer)
         cout << "USER PREVIEWS RECEIVED\n";
         
         vector<uint8_t> flatArgs = Image::charPtrToVector((char *)received->getMessage(), received->getMessageSize());
+        
         vector<Image> previews = extractImages(flatArgs);
         for (int i = 0; i < previews.size(); i++)
         {
@@ -791,12 +792,13 @@ string Peer::getMyImages()
     QStringList images = directory.entryList(QStringList() ,QDir::Files);
     foreach(QString filename, images) {
         string title = filename.toUtf8().constData();
-        string dir = MyImages + string("/") + title;
+        string dir = MyImages + title;
         int size;
         Image preview(DEF_IMG(size), Image::readImage(dir, size), username, 0);
         preview.setTitle(title);
         previews.push_back(preview);
     }
+    cout << "Titles = " << titles << endl;
     return VectorToString(flattenImages(previews));
 }
 
