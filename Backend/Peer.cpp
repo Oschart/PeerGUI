@@ -17,7 +17,7 @@ Peer::Peer(char *_myHostname, int _myPort, char *_shostname, int _sport) : Serve
     argCount[SET_QUOTA] = 3;
     argCount[ANSWER_QUOTA_REQUEST] = 4;
     argCount[ANSWER_IMAGE_REQUEST] = 4;
-    argCount[GET_USER_PREVIEWS] = 0;
+    argCount[GET_USER_PREVIEWS] = 1;
 
 }
 
@@ -253,7 +253,7 @@ int Peer::getUserPreviews(string otherpeer)
 
     cout << "Addrersssss == " << peerToAddress.first << " " <<  peerToAddress.second << endl;
     //string args = this->sessionToken + separator + otherpeer;
-    string args = "";
+    string args = "1";
     Message *toBeSent = new Message(GET_USER_PREVIEWS, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
     int res;
