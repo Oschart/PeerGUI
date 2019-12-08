@@ -252,21 +252,21 @@ vector<string> Peer::getAllUsers()
     return vector<string>(0);
 }
 
-void Peer::getUserPreviews(string otherpeer)
+int Peer::getUserPreviews(string otherpeer)
 {
 
     pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
     if (peerToAddress == make_pair(0U, 0U))
     {
         cout << "There's no peer record with such name in the broker\n";
-        return;
+        return 0;
     }
     cout << "Peer Address was received successfully, getting previews...\n";
     this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
 
     //string args = this->sessionToken + separator + otherpeer;
     string args = "";
-    Message *toBeSent = new Message(GET_USER_PREVIEW, stringToCharPtr(args), args.length(), (this->rpcID)++);
+    Message *toBeSent = new Message(GET_USER_PREVIEWS, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
     int res;
     if (this->execute(toBeSent))
@@ -286,7 +286,7 @@ void Peer::getUserPreviews(string otherpeer)
             //this->imageToPeer[imageTitle] = previews[i].getOwner();
             Image::writeImage(path, previews[i].getContent());
         }
-
+        res = 1;
         delete received;
     }
     else
@@ -295,7 +295,7 @@ void Peer::getUserPreviews(string otherpeer)
     }
     return res;
 }
-
+/*
 void Peer::getUserPreviews(string otherpeer)
 {
     pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
@@ -329,7 +329,7 @@ void Peer::getUserPreviews(string otherpeer)
     {
         cout << "Get User Previews operation timed out!\n";
     }
-}
+}*/
 
 int Peer::uploadImagePreview(string imageName, string imagePath)
 {
@@ -800,7 +800,7 @@ string Peer::getMyImages()
     vector<Image> previews;
     QStringList images = directory.entryList(QStringList() ,QDir::Files);
     foreach(QString filename, images) {
-        title = filename.toUtf8().constData();
+        string title = filename.toUtf8().constData();
         string dir = MyImages + string("/") + title;
         int size;
         Image preview(DEF_IMG(size), Image::readImage(dir, size), username, 0);
