@@ -60,12 +60,6 @@ enum opType
     REQUEST_IMAGE,
     REQUEST_QUOTA,
     SET_QUOTA
-    /*
-    GET_USER_IMAGES_CALLBACK,   // (token, receiver, Operation) no args
-    REQUEST_IMAGE_CALLBACK,     // (token, receiver, Operation) username + separator + imageName + separator + to_string(quota)
-    REQUEST_QUOTA_CALLBACK,     // (token, receiver, Operation) username + separator + imageName + separator + to_string(quota)
-    SET_QUOTA_CALLBACK         // (token, receiver, Operation) username + separator + imageName + separator + to_string(quota)
-    */
 };
 
 using namespace std;
