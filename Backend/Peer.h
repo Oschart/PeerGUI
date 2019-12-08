@@ -90,7 +90,7 @@ public:
     int getPreviews();
     int getUserPreviews(string otherpeer);
 
-    vector<string> getAllUsers();
+    int getAllUsers(vector<string> &usernames);
 
     //void getUserImages(string otherpeer);
     //void getUserTitlesCallback(string otherpeer);
