@@ -266,7 +266,7 @@ void Peer::getUserPreviews(string otherpeer)
 
     //string args = this->sessionToken + separator + otherpeer;
     string args = "";
-    Message *toBeSent = new Message(GET_USER_PREVIEW, stringToCharPtr(args), args.length(), (this->rpcID)++);
+    Message *toBeSent = new Message(GET_USER_PREVIEWS, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
     int res;
     if (this->execute(toBeSent))
@@ -281,12 +281,9 @@ void Peer::getUserPreviews(string otherpeer)
         for (int i = 0; i < previews.size(); i++)
         {
             string storedImageTitle = addUsertoName(previews[i].getTitle(), previews[i].getOwner());
-            //imageTitle.pop_back();
             string path = PREVIEWS + storedImageTitle;
-            //this->imageToPeer[imageTitle] = previews[i].getOwner();
             Image::writeImage(path, previews[i].getContent());
         }
-
         delete received;
     }
     else
@@ -295,7 +292,7 @@ void Peer::getUserPreviews(string otherpeer)
     }
     return res;
 }
-
+/*
 void Peer::getUserPreviews(string otherpeer)
 {
     pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
@@ -330,7 +327,7 @@ void Peer::getUserPreviews(string otherpeer)
         cout << "Get User Previews operation timed out!\n";
     }
 }
-
+*/
 int Peer::uploadImagePreview(string imageName, string imagePath)
 {
     this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
