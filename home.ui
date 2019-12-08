@@ -22,7 +22,7 @@
   <widget class="QPushButton" name="pushButton_3">
    <property name="geometry">
     <rect>
-     <x>320</x>
+     <x>340</x>
      <y>340</y>
      <width>61</width>
      <height>21</height>
@@ -115,7 +115,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Upload Image</string>
+      <string>Add Image</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_4">
@@ -128,7 +128,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Upload Image Preview</string>
+      <string>Images Granted to Me</string>
      </property>
     </widget>
    </widget>
