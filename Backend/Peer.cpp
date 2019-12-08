@@ -414,7 +414,7 @@ void Peer::requestImage(string otherpeer, string imageName, int quota)
         content = sessionToken + separator + otherpeer + separator + to_string(REQUEST_IMAGE) + separator + content;
         toBeSent->setMessage(stringToCharPtr(content), content.length());
         this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
-        this->execute(toBeSent));
+        this->execute(toBeSent);
     }
 }
 
@@ -457,7 +457,7 @@ void Peer::requestImageQuota(string otherpeer, string imageName, int quota)
         content = sessionToken + separator + otherpeer + separator + to_string(REQUEST_QUOTA) + separator + content;
         toBeSent->setMessage(stringToCharPtr(content), content.length());
         this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
-        this->execute(toBeSent));
+        this->execute(toBeSent);
     }
 }
 
@@ -501,7 +501,7 @@ void Peer::setImageQuota(string otherpeer, string imageName, int quota)
         content = sessionToken + separator + otherpeer + separator + to_string(SET_QUOTA) + separator + content;
         toBeSent->setMessage(stringToCharPtr(content), content.length());
         this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
-        this->execute(toBeSent));
+        this->execute(toBeSent);
     }
 }
 
