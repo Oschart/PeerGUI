@@ -32,7 +32,7 @@ bool Peer::execute(Message *_message)
     _message->setMessageType(Request);
     sendPartitioned(_message);
     int trials = 10;
-    while ((cv.wait_for(lck, chrono::seconds(1)) == cv_status::timeout) && trials--)
+    while ((cv.wait_for(lck, chrono::milliseconds(100)) == cv_status::timeout) && trials--)
     {
         sendPartitioned(_message);
     }
@@ -365,20 +365,23 @@ int Peer::uploadImagePreview(string imageName, string imagePath)
     return res;
 }
 
-void Peer::requestImage(string otherpeer, string imageName, int quota)
+int Peer::requestImage(string otherpeer, string imageName, int quota)
 {
     pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
+    cout << "this passes ..?" << endl;
     if (peerToAddress == make_pair(0U, 0U))
     {
         cout << "There's no peer record with such name in the broker\n";
-        return;
+        return -1;
     }
     cout << "Peer Address was received successfully, requesting image...\n";
     this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
+    cout << "I will send to this " << peerToAddress.second << endl;
 
     string args = username + separator + imageName + separator + to_string(quota);
     Message *toBeSent = new Message(REQUEST_IMAGE, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
+    int res;
     if (this->execute(toBeSent))
     {
         int rpc_id = toBeSent->getRPCId();
@@ -389,20 +392,12 @@ void Peer::requestImage(string otherpeer, string imageName, int quota)
         if (content == "1")
         {
             cout << "Image request sent successfully\n";
+            res = 1;
         }
         else
         {
             cout << "Undefined response for image request\n";
-            /*
-            string path = GrantedImages + imageName + CODED;
-            vector<uint8_t> payload = Image::stringToVector(content);
-            cout << "Payload : " << payload.size() << endl;
-            Image img = extractImages(payload)[0];
-            cout << "Image File size = " << img.getSize() << endl;
-            Image::writeImage(path, img.getCodified());
-
-            appendFileAndCache(GrantedImages_db, grantedImagesTitles, imageName);
-            */
+            return -1;
         }
 
         delete received;
@@ -410,22 +405,47 @@ void Peer::requestImage(string otherpeer, string imageName, int quota)
     else
     {
         cout << "Request Image operation timed out!, will send to the broker\n";
+        toBeSent->setOperation(CACHE_MSG);
         string content = string((char *)toBeSent->getMessage(), toBeSent->getMessageSize());
         content = sessionToken + separator + otherpeer + separator + to_string(REQUEST_IMAGE) + separator + content;
+        cout << "CONTENT:  " << content << endl;
         toBeSent->setMessage(stringToCharPtr(content), content.length());
         this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
-        this->execute(toBeSent);
+        if (this->execute(toBeSent)){
+            int rpc_id = toBeSent->getRPCId();
+            Message *received = this->rpcToMsg[rpc_id];
+            this->rpcToMsg.erase(rpc_id);
+            string content = string((char *)received->getMessage(), received->getMessageSize());
+
+            if (content == "1")
+            {
+                cout << "Image request sent successfully\n";
+                res = 2;
+            }
+            else
+            {
+                cout << "Undefined response for image request\n";
+                res = -1;
+            }
+            delete received;
+        }
+        else {
+            //timeout on the send to broker after timeout on send to peer
+            res = -1;
+        }
     }
+    return res;
 }
 
-void Peer::requestImageQuota(string otherpeer, string imageName, int quota)
+int Peer::requestImageQuota(string otherpeer, string imageName, int quota)
 {
     pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
     if (peerToAddress == make_pair(0U, 0U))
     {
         cout << "There's no peer record with such name in the broker\n";
-        return;
+        return -1;
     }
+    int res;
     cout << "Peer Address was received successfully, requesting image quota...\n";
     this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
 
@@ -442,10 +462,12 @@ void Peer::requestImageQuota(string otherpeer, string imageName, int quota)
         if (content == "1")
         {
             cout << "Quota request sent successfully\n";
+            res = 1;
         }
         else
         {
             cout << "Undefined response for quota request\n";
+            res = -1;
         }
 
         delete received;
@@ -457,8 +479,30 @@ void Peer::requestImageQuota(string otherpeer, string imageName, int quota)
         content = sessionToken + separator + otherpeer + separator + to_string(REQUEST_QUOTA) + separator + content;
         toBeSent->setMessage(stringToCharPtr(content), content.length());
         this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
-        this->execute(toBeSent);
+        if (this->execute(toBeSent)){
+            int rpc_id = toBeSent->getRPCId();
+            Message *received = this->rpcToMsg[rpc_id];
+            this->rpcToMsg.erase(rpc_id);
+            string content = string((char *)received->getMessage(), received->getMessageSize());
+
+            if (content == "1")
+            {
+                cout << "Image request sent successfully\n";
+                res = 2;
+            }
+            else
+            {
+                cout << "Undefined response for image request\n";
+                res = -1;
+            }
+            delete received;
+        }
+        else {
+            //timeout on the send to broker after timeout on send to peer
+            res = -1;
+        }
     }
+    return res;
 }
 
 void Peer::setImageQuota(string otherpeer, string imageName, int quota)

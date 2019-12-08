@@ -16,7 +16,7 @@ visitProfile::visitProfile(std::string user, QWidget *parent) :
     ui->listView->clear();
 
     int res =peer.getUserPreviews(user);
-    if (res == -1)  QMessageBox::information (this, "Previews", "Could not connect to the server");
+    if (res == -1)  {QMessageBox::information (this, "Previews", "Could not connect to the server");}
     else  {
         QDir directory(PREVIEWS);
         QStringList images = directory.entryList(QStringList() ,QDir::Files);
@@ -31,6 +31,7 @@ visitProfile::visitProfile(std::string user, QWidget *parent) :
         }
         cout << "I will clear temp images" << endl;
         peer.clearTempImages();
+        this->show();
     }
 
 
@@ -48,6 +49,6 @@ void visitProfile::on_listView_viewportEntered()
 
 void visitProfile::on_listView_itemClicked(QListWidgetItem *item)
 {
-    RequestImageDialog * pr = new RequestImageDialog(user);
+    RequestImageDialog * pr = new RequestImageDialog(user, item->text().toStdString());
     pr->show();
 }

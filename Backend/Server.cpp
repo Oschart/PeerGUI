@@ -172,7 +172,10 @@ void Server::sendPartitioned(Message *_message)
             //cout << int(c[subLen-1]) << endl;
         }
         char *marshalled = part.marshal();
-        this->udpSocket->writeToSocket(marshalled, MAX_SIZE);
+        cout << "I will write" << endl;
+        this->udpSocket->writeToSocketAndWait(marshalled, MAX_SIZE, 50);
+        cout << "I wrote and waited" << endl;
+
 
         delete[] marshalled;
         delete[] subString;

@@ -89,7 +89,7 @@ void home::on_pushButton_13_clicked()
     string username = ui->comboBox->currentText().toUtf8().constData();
     if (username != ""){
         visitProfile * vp = new visitProfile(username);
-        vp->show();
+       // vp->show();
     }
 
 
@@ -144,7 +144,7 @@ void home::on_listView_itemClicked(QListWidgetItem *item)
     std::cout << "Look at this " << item->text().toUtf8().constData() << std::endl;
     string user = item->data(Qt::UserRole).toString().toUtf8().constData();
     std::cout << "From this " << user << endl;
-    RequestImageDialog * pr = new RequestImageDialog(user);
+    RequestImageDialog * pr = new RequestImageDialog(user, item->text().toStdString());
     pr->show();
 
 

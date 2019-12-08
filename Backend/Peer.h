@@ -20,7 +20,7 @@
 #include "Server.h"
 //#include "ParseUtil.cpp"
 
-#define BROKER_IP "10.7.57.213"
+#define BROKER_IP "10.7.57.31"
 #define BROKER_PORT 2468
 typedef unsigned int IP;
 typedef unsigned int Port;
@@ -95,8 +95,8 @@ public:
     //void getUserTitlesCallback(string otherpeer);
 
     int uploadImagePreview(string imageName, string imagePath);
-    void requestImage(string otherpeer, string imageName, int quota);
-    void requestImageQuota(string otherpeer, string imageName, int quota);
+    int requestImage(string otherpeer, string imageName, int quota);
+    int requestImageQuota(string otherpeer, string imageName, int quota);
     void setImageQuota(string otherpeer, string imageName, int quota);
 
     void sendRequest(opType operation, string otherpeer, string args);
