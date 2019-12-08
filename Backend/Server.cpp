@@ -172,7 +172,7 @@ void Server::sendPartitioned(Message *_message)
             //cout << int(c[subLen-1]) << endl;
         }
         char *marshalled = part.marshal();
-        this->udpSocket->writeToSocket(marshalled, MAX_SIZE);
+        this->udpSocket->writeToSocketAndWait(marshalled, MAX_SIZE, 50);
 
         delete[] marshalled;
         delete[] subString;
