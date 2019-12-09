@@ -20,7 +20,7 @@
 #include "Server.h"
 //#include "ParseUtil.cpp"
 
-#define BROKER_IP "10.7.57.31"
+#define BROKER_IP "10.7.57.213"
 #define BROKER_PORT 2468
 typedef unsigned int IP;
 typedef unsigned int Port;

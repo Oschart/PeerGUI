@@ -16,7 +16,7 @@ Peer::Peer(char *_myHostname, int _myPort, char *_shostname, int _sport) : Serve
     argCount[REQUEST_QUOTA] = 3;
     argCount[SET_QUOTA] = 3;
     argCount[ANSWER_QUOTA_REQUEST] = 4;
-    argCount[ANSWER_IMAGE_REQUEST] = 4;
+    argCount[ANSWER_IMAGE_REQUEST] = 3;
     argCount[GET_USER_PREVIEWS] = 1;
 
 }
@@ -694,8 +694,12 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
 
             if(response == "1"){
                 cout << "Image request approved\n";
+                cout << "the size of args[3] " << args[3].size() << endl;
+                cout << "the sender " << sender << endl;
+                cout << "the image name " << imageName << endl;
                 string full_image_name = addUsertoName(imageName, sender);
-                Image::writeImage(GrantedImages + full_image_name, args[3]);
+                vector<Image> vec = extractImages(flatArgs);
+                Image::writeImage(GrantedImages + full_image_name, vec[0].getCodified());
 
             }
             else if(response == "0"){

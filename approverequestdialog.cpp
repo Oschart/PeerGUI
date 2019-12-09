@@ -1,10 +1,11 @@
 #include "approverequestdialog.h"
 #include "ui_approverequestdialog.h"
 #include <iostream>
+#include "globals.h"
 
-ApproveRequestDialog::ApproveRequestDialog(bool _new, std::string _req, std::string _img, int _q, QWidget *parent) :
+ApproveRequestDialog::ApproveRequestDialog(bool _new, std::string _req, std::string _img, int _q, int _ind, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ApproveRequestDialog), requester(_req), imageName(_img), quota(_q), newImage(_new)
+    ui(new Ui::ApproveRequestDialog), requester(_req), imageName(_img), quota(_q), newImage(_new), index(_ind)
 
 {
     ui->setupUi(this);
@@ -20,11 +21,12 @@ ApproveRequestDialog::~ApproveRequestDialog()
 
 void ApproveRequestDialog::on_pushButton_2_clicked()
 {
+    peer.answerImageRequest(index, 0);
     close();
 }
 
 void ApproveRequestDialog::on_pushButton_clicked()
 {
-    std::cout << "Will call approve" << std::endl;
+    peer.answerImageRequest(index, 1);
     close();
 }

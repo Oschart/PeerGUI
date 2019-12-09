@@ -184,12 +184,12 @@ void home::on_pushButton_7_clicked()
 
 void home::on_listWidget_itemClicked(QListWidgetItem *item)
 {
-    cout << "hi there" << endl;
+    int index = ui->listWidget->row(item);
     string requester = item->data(Qt::UserRole).toString().toUtf8().constData();
     string imageName = item->data(Qt::DisplayPropertyRole).toString().toUtf8().constData();
     int quota = item->data(Qt::DecorationRole).toInt();
 
-    ApproveRequestDialog * dlg = new ApproveRequestDialog(true, requester, imageName, quota);
+    ApproveRequestDialog * dlg = new ApproveRequestDialog(true, requester, imageName, quota, index);
     dlg->show();
 
 
@@ -198,12 +198,12 @@ void home::on_listWidget_itemClicked(QListWidgetItem *item)
 
 void home::on_listWidget_2_itemClicked(QListWidgetItem *item)
 {
-    cout << "hi there" << endl;
+    int index = ui->listWidget_2->row(item);
     string requester = item->data(Qt::UserRole).toString().toUtf8().constData();
     string imageName = item->data(Qt::DisplayPropertyRole).toString().toUtf8().constData();
     int quota = item->data(Qt::DecorationRole).toInt();
 
-    ApproveRequestDialog * dlg = new ApproveRequestDialog(false, requester, imageName, quota);
+    ApproveRequestDialog * dlg = new ApproveRequestDialog(false, requester, imageName, quota, index);
     dlg->show();
 }
 
