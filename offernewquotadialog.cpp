@@ -19,8 +19,7 @@ OfferNewQuotaDialog::~OfferNewQuotaDialog()
 void OfferNewQuotaDialog::on_buttonBox_accepted()
 {
     int quota = ui->lineEdit->text().toInt();
-    /*int res =*/ peer.setImageQuota(user, imageName, quota);
-    int res = 1;
+    int res = peer.setImageQuota(user, imageName, quota);
     if (res == -1) QMessageBox::information (this, "Setting Quota", "An error occurred. Try again");
     else if (res == 1){
         QMessageBox::information (this, "Setting Quota", "Successfully updated the quota");

@@ -15,7 +15,9 @@ GrantedImagesList::GrantedImagesList(QWidget *parent) :
     foreach(QString filename, images) {
         Image img (Image::readImage((GrantedImages + filename).toStdString(), sz));
         quota = img.getQuota();
-        auto item = new QListWidgetItem(filename + " -- " + img.getOwner().c_str() + " -- " + to_string(quota).c_str() + " views remaining");
+        auto nameWithoutUser = filename.toStdString();
+        removeUserfromName(nameWithoutUser);
+        auto item = new QListWidgetItem((nameWithoutUser + " -- " + img.getOwner().c_str() + " -- " + to_string(quota).c_str() + " views remaining").c_str());
         item->setSizeHint(QSize(item->sizeHint().width(), 50));
         item->setData(Qt::UserRole, filename);
         item->setData(Qt::DecorationPropertyRole, img.getOwner().c_str());
