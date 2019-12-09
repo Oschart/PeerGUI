@@ -45,7 +45,8 @@ enum opType
     GET_ALL_USERS = 5,
     CACHE_MSG = 6,
     NOTIFY_VIEW = 7,
-    
+    RETRIEVE_USER_PREVIEWS = 8,
+    RETRIEVE_PREVIOUSLY_SENT = 9,
     //broker and peer
     ANSWER_QUOTA_REQUEST,
     ANSWER_IMAGE_REQUEST,
@@ -55,7 +56,7 @@ enum opType
     REQUEST_IMAGE,
     REQUEST_QUOTA,
     SET_QUOTA,
-    RETRIEVE_USER_PREVIEWS = 55,
+    
  
 };
 
@@ -85,6 +86,7 @@ public:
     int getPreviews();
     int getUserPreviews(string otherpeer);
     int retrieveUserPreviews();
+    int retrievePreviouslySent();
 
     int getAllUsers(vector<string> &usernames);
 
@@ -119,6 +121,8 @@ public:
     
     void loadReceiverQuota();
     void writeBackQuotaDB();
+
+    vector<Image> getImagesOwnedBy(string otherpeer);
     
     vector<imageQuotaRequest> quotaRequests;
     vector<imageQuotaRequest> imageRequests;
