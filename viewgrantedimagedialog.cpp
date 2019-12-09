@@ -4,6 +4,7 @@
 #include "Backend/Peer.h"
 #include "Backend/ParseUtil.h"
 #include "grantedimagepreview.h"
+#include "globals.h"
 
 ViewGrantedImageDialog::ViewGrantedImageDialog(std::string _own, std::string _filename, QWidget *parent) :
     QDialog(parent),
@@ -34,6 +35,7 @@ void ViewGrantedImageDialog::on_buttonBox_accepted()
         GrantedImagePreview* gip = new GrantedImagePreview("temp.temp");
         deleteFile("temp.temp");
         gip->show();
+        peer.notifyView(fileName);
     }
     else {
         GrantedImagePreview* gip = new GrantedImagePreview(GrantedImages + fileName);

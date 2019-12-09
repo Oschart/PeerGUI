@@ -285,42 +285,53 @@ int Peer::getUserPreviews(string otherpeer)
     }
     return res;
 }
-/*
-void Peer::getUserPreviews(string otherpeer)
+
+int Peer::retrieveUserPreviews(string otherpeer)
 {
+
     pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
     if (peerToAddress == make_pair(0U, 0U))
     {
         cout << "There's no peer record with such name in the broker\n";
-        return;
+        return 0;
     }
-    cout << "Peer Address was received successfully, getting titles...\n";
+    cout << "Peer Address was received successfully, getting previews...\n";
     this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
 
-    string args = this->username;
+    cout << "Addrersssss == " << peerToAddress.first << " " <<  peerToAddress.second << endl;
+    //string args = this->sessionToken + separator + otherpeer;
+    string args = "1";
     Message *toBeSent = new Message(GET_USER_PREVIEWS, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
+    int res;
     if (this->execute(toBeSent))
     {
+        res = 1;
         int rpc_id = toBeSent->getRPCId();
         Message *received = this->rpcToMsg[rpc_id];
         this->rpcToMsg.erase(rpc_id);
-        cout << "USER TITLES RECEIVED: \n";
-
-        string content = string((char *)received->getMessage(), received->getMessageSize());
-        vector<string> args = extractArgs(content);
-
-        for (int i = 0; i < args.size(); i++)
-            cout << args[i] << endl;
-
+        cout << "USER PREVIEWS RECEIVED\n";
+        
+        vector<uint8_t> flatArgs = Image::charPtrToVector((char *)received->getMessage(), received->getMessageSize());
+        
+        vector<Image> previews = extractImages(flatArgs);
+        for (int i = 0; i < previews.size(); i++)
+        {
+            string storedImageTitle = addUsertoName(previews[i].getTitle(), previews[i].getOwner());
+            string path = PREVIEWS + storedImageTitle;
+            Image::writeImage(path, previews[i].getContent());
+        }
         delete received;
     }
     else
     {
-        cout << "Get User Previews operation timed out!\n";
+        cout << "Get User Previews operation timed out!\n"; res = -1;
     }
+    return res;
 }
-*/
+
+
+
 int Peer::uploadImagePreview(string imageName, string imagePath)
 {
     this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
