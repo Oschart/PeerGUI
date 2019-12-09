@@ -994,7 +994,9 @@ vector<Image> Peer::getImagesOwnedBy(string otherpeer)
         if(uname == otherpeer)
         {
             int sz;
-            imgs.push_back(Image(Image::readImage(path, sz)));
+            Image img(Image::readImage(path, sz));
+            img.setTitle(title);
+            imgs.push_back(img);
         }
     }
     return imgs;
