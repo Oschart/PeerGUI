@@ -28,6 +28,7 @@ home::home(QWidget *parent) :
     ui(new Ui::home)
 {
     ui->setupUi(this);
+    this->setStyleSheet("background-image:url(\"/home/wan/Documents/PICky/sky.jpeg\"); background-position: center;");
     ui->stackedWidget->setCurrentIndex(2);
 
 
