@@ -51,8 +51,8 @@ enum opType
     GET_PREVIEW_FEED = 3,
     UPLOAD_PREVIEW = 4,
     GET_ALL_USERS = 5,
-    NOTIFY_VIEW = 7,
     CACHE_MSG = 6,
+    NOTIFY_VIEW = 7,
     //broker and peer
     ANSWER_QUOTA_REQUEST,
     ANSWER_IMAGE_REQUEST,
