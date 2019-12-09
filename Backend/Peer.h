@@ -32,7 +32,7 @@ typedef unsigned int Port;
 
 
 #define MAX_SIZE 8192
-#define DEF_IMG(sz1) Image::readImage("/home/wan/Documents/MyData/SPACE.JPG", sz1)
+#define DEF_IMG(sz1) Image::readImage("/home/wan/Documents/PICky/SPACE.JPG", sz1)
 
 enum opType
 {
@@ -113,8 +113,6 @@ public:
     void setQuotaGrantedImage(string imageName, int quota);
     void clearTempImages();
 
-    Image loadMyImage(string path, int quota);
-    string getMyTitles();
     string getMyImages();
     void uploadLocalImage(string path);
     
@@ -144,22 +142,12 @@ private:
     string sessionToken;
     string defaultImage;
     atomic<int> rpcID;
-    //map<string, string> imageToPeer;
-
-    
 
     pair<IP, Port> getAddress(string otherPeer);
     void listenerRun();
 
     map<opType, int> argCount;
 
-    /*set<string> myImageTitles;
-    set<string> grantedImagesTitles;
-    set<string> previewsTitles;*/
-    
-
-    //void cacheDB(string path, set<string> &cache);
-    //void appendFileAndCache(string path, set<string> &cache, string entry);
 };
 //#include "Peer.cpp"
 #endif // PEER_H

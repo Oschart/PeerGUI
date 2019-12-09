@@ -87,9 +87,6 @@ int Peer::login(string username, string password)
             createFolder(MyImages);
             createFolder(PREVIEWS);
 
-//            retrieveUserPreviews();
-//            retrievePreviouslySent();
-
             result = 1;
         }
 
@@ -1024,20 +1021,6 @@ void Peer::clearTempImages()
     }
 }
 
-Image Peer::loadMyImage(string title, int quota)
-{
-    int sz;
-    string path = MyImages + title;
-
-    if (!isdigit(title.back()) && !isalnum(title.back()))
-    {
-        cerr << "Hey, title is invalid!!\n";
-    }
-    // Pop_back???
-    Image img = Image(DEF_IMG(sz), Image::readImage(path, sz), username, quota);
-
-    return img;
-}
 
 string Peer::getMyImages()
 {

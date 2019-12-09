@@ -23,7 +23,6 @@ Message *Server::getRequest(unsigned int &peerIP, int& peerPort)
   delete[] messageBuf;
   if (received->getMessageType() == Request)
   {
-    //cout << "Message received: "; cout << "$" << (char*)received->getMessage() <<"$" <<  endl;
     return received;
   }
   else
@@ -72,14 +71,7 @@ void Server::sendReply(Message *_message)
 {
   _message->setMessageType(Reply);
   sendPartitioned(_message);
-  // char *messageBuf = new char[MAX_SIZE];
-  // messageBuf = _message->marshal();
-  // cout << "Will send: " << (char*)_message->getMessage()<< endl;
-  // int result = this->udpSocket->writeToSocket(messageBuf, MAX_SIZE);
-  // if (result < 0)
-  //   cout << "Error: Couldn't send message\n";
-  //
-  // delete[] messageBuf;
+
 }
 
 Server::Server(char *_listen_hostname, int _listen_port)
@@ -154,10 +146,8 @@ void Server::sendPartitioned(Message *_message)
     char *messageBuf = (char *)_message->getMessage();
     int len = _message->getMessageSize();
     cout << "The length to be sent " << len << endl;
-    //_message->setMessageType(Request);
     Message part(_message);
     int numOfParts = 1 + (len - 1) / MAX_PART_SIZE;
-    //cout << "Will send " << numOfParts << " parts " << endl;
     for (int i = 0; i < len; i += MAX_PART_SIZE)
     { //maximum string without metadata
         int subLen = min(MAX_PART_SIZE, len - i);
@@ -186,7 +176,6 @@ void Server::serveRequest()
 {
   unsigned int peerIP; int peerPort;
   Message *incoming = this->getRequest(peerIP, peerPort);
-  //if (incoming != nullptr) cout << "The incoming has " << incoming->getTotal() << " parts " << endl;
   if (incoming != nullptr && incoming->getTotal() > 1){
     incoming = processPart(incoming, peerIP, peerPort);
   }
@@ -212,7 +201,6 @@ void Server::serveRequestNewThread(Message *incoming, unsigned int peerIP, unsig
       if(history[peerIP][peerPort][message_rpc_id] == nullptr){
       //cout << "IN PROGRESS!" << endl;
     } else {
-        cout << "DUPLICATE!" << endl;
         Message *outcoming = history[peerIP][peerPort][message_rpc_id];
         sendReply(outcoming);
       }
