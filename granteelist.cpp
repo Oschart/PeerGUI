@@ -12,7 +12,7 @@ GranteeList::GranteeList(std::string _img, QWidget *parent) :
     //assumption
     std::vector<std::string> users; std::vector<int> quotas;
     users.push_back("Oscar");
-    quotas.push_back(6);
+    quotas.push_back(54);
 
     ui->listWidget->clear();
     for(int i = 0 ; i < users.size(); i++) {
