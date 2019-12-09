@@ -79,6 +79,8 @@ int Peer::login(string username, string password)
             GrantedImages = rootDIR + username + "/MyData/GrantedImages/";
             Quota_db = rootDIR + username + "/MyData/quota_db.txt";
 
+            createFolder(rootDIR);
+            createFolder(rootDIR + username);
             createFolder(MyData);
             createFolder(GrantedImages);
             createFolder(MyImages);
@@ -948,7 +950,7 @@ Image Peer::loadMyImage(string title, int quota)
 string Peer::getMyImages()
 {
     string titles = "";
-    QDir directory(MyImages);
+    QDir directory(MyImages.c_str());
     vector<Image> previews;
     QStringList images = directory.entryList(QStringList() ,QDir::Files);
     foreach(QString filename, images) {

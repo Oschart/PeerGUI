@@ -2,6 +2,7 @@
 #include "ui_grantedimageslist.h"
 #include "Backend/Peer.h"
 #include "viewgrantedimagedialog.h"
+#include "globals.h"
 
 GrantedImagesList::GrantedImagesList(QWidget *parent) :
     QDialog(parent),
@@ -9,11 +10,11 @@ GrantedImagesList::GrantedImagesList(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->listWidget->clear();
-    QDir directory(GrantedImages);
+    QDir directory(peer.GrantedImages.c_str());
     int sz, quota;
     QStringList images = directory.entryList(QStringList() ,QDir::Files);
     foreach(QString filename, images) {
-        Image img (Image::readImage((GrantedImages + filename).toStdString(), sz));
+        Image img (Image::readImage((peer.GrantedImages.c_str() + filename).toStdString(), sz));
         quota = img.getQuota();
         auto nameWithoutUser = filename.toStdString();
         removeUserfromName(nameWithoutUser);

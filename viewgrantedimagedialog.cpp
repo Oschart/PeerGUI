@@ -26,11 +26,11 @@ void ViewGrantedImageDialog::on_buttonBox_rejected()
 void ViewGrantedImageDialog::on_buttonBox_accepted()
 {
     int sz, quota;
-    Image img (Image::readImage((GrantedImages + fileName), sz));
+    Image img (Image::readImage((peer.GrantedImages + fileName), sz));
     quota = img.getQuota();
     if (quota){
         Image newCodified (DEF_IMG(sz), img.getContent(), img.getOwner(), quota-1);
-        Image::writeImage(GrantedImages+fileName, newCodified.getCodified());
+        Image::writeImage(peer.GrantedImages+fileName, newCodified.getCodified());
         Image::writeImage("temp.temp", img.getContent());
         GrantedImagePreview* gip = new GrantedImagePreview("temp.temp");
         deleteFile("temp.temp");
@@ -38,7 +38,7 @@ void ViewGrantedImageDialog::on_buttonBox_accepted()
         peer.notifyView(fileName);
     }
     else {
-        GrantedImagePreview* gip = new GrantedImagePreview(GrantedImages + fileName);
+        GrantedImagePreview* gip = new GrantedImagePreview(peer.GrantedImages + fileName);
         gip->show();
     }
 }

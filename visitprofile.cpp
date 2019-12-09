@@ -18,13 +18,13 @@ visitProfile::visitProfile(std::string user, QWidget *parent) :
     int res =peer.getUserPreviews(user);
     if (res == -1)  {QMessageBox::information (this, "Previews", "Could not connect to the server");}
     else  {
-        QDir directory(PREVIEWS);
+        QDir directory(peer.PREVIEWS.c_str());
         QStringList images = directory.entryList(QStringList() ,QDir::Files);
         foreach(QString filename, images) {
             string orig = filename.toUtf8().constData();
             string user = removeUserfromName(orig);
             if (this->user == user) {
-                QListWidgetItem* item = new QListWidgetItem(QIcon(PREVIEWS + filename), (orig).c_str());
+                QListWidgetItem* item = new QListWidgetItem(QIcon(peer.PREVIEWS.c_str() + filename), (orig).c_str());
                 item->setData(Qt::UserRole, user.c_str());
                 ui->listView->addItem(item);
             }

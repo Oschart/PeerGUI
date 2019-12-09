@@ -29,11 +29,7 @@ typedef unsigned int Port;
 #define CODED "_c"
 #define rootDIR "/home/wan/Documents/PICky/"
 
-string MyData;
-string MyImages;
-string PREVIEWS;
-string GrantedImages;
-string Quota_db;
+
 
 #define MAX_SIZE 8192
 #define DEF_IMG(sz1) Image::readImage("/home/wan/Documents/MyData/SPACE.JPG", sz1)
@@ -126,6 +122,11 @@ public:
     vector<imageQuotaRequest> imageRequests;
 
     map<string, map<string, int> > receiverQuota;
+    string MyData;
+    string MyImages;
+    string PREVIEWS;
+    string GrantedImages;
+    string Quota_db;
     ~Peer();
 
 private:
@@ -152,6 +153,7 @@ private:
     set<string> previewsTitles;*/
 
     vector<string> tempImages;
+
 
     
 

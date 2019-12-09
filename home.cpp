@@ -47,7 +47,7 @@ void home::on_pushButton_clicked()
 {
     QString filePath = QFileDialog::getOpenFileName(this, "Upload an image");
     QString filename = QFileInfo(filePath).fileName();
-    std::cout << QFile::copy(filePath, MyImages + filename) << std::endl;
+    std::cout << QFile::copy(filePath, peer.MyImages.c_str() + filename) << std::endl;
 }
 
 void home::on_pushButton_2_clicked()
@@ -58,10 +58,10 @@ void home::on_pushButton_2_clicked()
     ui->listView_2->setIconSize(QSize(50, 50));
     ui->listView_2->setResizeMode((QListWidget::Adjust));
     ui->listView_2->clear();
-    QDir directory(MyImages);
+    QDir directory(peer.MyImages.c_str());
     QStringList images = directory.entryList(QStringList() ,QDir::Files);
     foreach(QString filename, images) {
-        ui->listView_2->addItem(new QListWidgetItem(QIcon(MyImages + filename), filename));
+        ui->listView_2->addItem(new QListWidgetItem(QIcon(peer.MyImages.c_str() + filename), filename));
     }
 
 }
@@ -110,12 +110,12 @@ void home::on_pushButton_6_clicked()
     if (res == -1)  QMessageBox::information (this, "Previews", "Could not connect to the server");
     else  {
         ui->stackedWidget->setCurrentIndex(0);
-        QDir directory(PREVIEWS);
+        QDir directory(peer.PREVIEWS.c_str());
         QStringList images = directory.entryList(QStringList() ,QDir::Files);
         foreach(QString filename, images) {
             string orig = filename.toUtf8().constData();
             string user = removeUserfromName(orig);
-            QListWidgetItem* item = new QListWidgetItem(QIcon(PREVIEWS + filename), (orig).c_str());
+            QListWidgetItem* item = new QListWidgetItem(QIcon(peer.PREVIEWS.c_str() + filename), (orig).c_str());
             item->setData(Qt::UserRole, user.c_str());
             ui->listView->addItem(item);
         }
@@ -134,7 +134,7 @@ void home::on_pushButton_5_clicked()
 
 void home::on_listView_2_itemPressed(QListWidgetItem *item)
 {
-    ImageLargePreview * pr = new ImageLargePreview((MyImages + item->text()).toUtf8().constData());
+    ImageLargePreview * pr = new ImageLargePreview((peer.MyImages.c_str() + item->text()).toUtf8().constData());
     pr->show();
 
 }
