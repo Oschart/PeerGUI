@@ -49,9 +49,8 @@ enum opType
     GET_PREVIEW_FEED = 3,
     UPLOAD_PREVIEW = 4,
     GET_ALL_USERS = 5,
+    NOTIFY_VIEW = 7,
     CACHE_MSG = 6,
-   
-    
     //broker and peer
     ANSWER_QUOTA_REQUEST,
     ANSWER_IMAGE_REQUEST,
@@ -111,7 +110,7 @@ public:
 
     Message *doOperation(Message *_received, IP user_ip, Port user_port);
 
-    void viewGrantedImage(string imageName);
+    void notifyView(string imageName);
     void setQuotaGrantedImage(string imageName, int quota);
     void clearTempImages();
 
