@@ -37,6 +37,8 @@ typedef unsigned int Port;
 #define GrantedImages_db "/home/wan/Documents/MyData/granted_images_db.txt"
 #define Previews_db "/home/wan/Documents/MyData/previews_db.txt"
 
+#define Quota_db "/home/wan/Documents/MyData/quota_db.txt"
+
 #define MAX_SIZE 8192
 #define DEF_IMG(sz1) Image::readImage("/home/wan/Documents/MyData/SPACE.JPG", sz1)
 
@@ -60,7 +62,16 @@ enum opType
     GET_USER_PREVIEWS,
     REQUEST_IMAGE,
     REQUEST_QUOTA,
-    SET_QUOTA
+    SET_QUOTA,
+    
+    /*ANSWER_QUOTA_REQUEST_RELAY,
+    ANSWER_IMAGE_REQUEST_RELAY,
+    ANSWER_SET_QUOTA_RELAY,
+    //peer
+    GET_USER_PREVIEWS_RELAY,
+    REQUEST_IMAGE_RELAY,
+    REQUEST_QUOTA_RELAY,
+    SET_QUOTA_RELAY,*/
 };
 
 using namespace std;
@@ -120,8 +131,13 @@ public:
     string getMyImages();
     void uploadLocalImage(string path);
     
+    void loadReceiverQuota();
+    void writeBackQuotaDB();
+    
     vector<imageQuotaRequest> quotaRequests;
     vector<imageQuotaRequest> imageRequests;
+
+    map<string, map<string, int> > receiverQuota;
     ~Peer();
 
 private:
@@ -148,6 +164,11 @@ private:
     set<string> previewsTitles;*/
 
     vector<string> tempImages;
+
+    
+
+
+    
 
     //void cacheDB(string path, set<string> &cache);
     //void appendFileAndCache(string path, set<string> &cache, string entry);
