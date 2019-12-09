@@ -218,3 +218,27 @@ vector<string> scrap_dir()
         cout << p.path() << '\n';
 }
 */
+
+vector<string> scrap_dir(string path)
+{
+    vector<string> filenames;
+    DIR *dir;
+    struct dirent *ent;
+    if ((dir = opendir(path.c_str())) != NULL)
+    {
+        /* print all the files and directories within directory */
+        while ((ent = readdir(dir)) != NULL)
+        {
+            string filename = ent->d_name;
+            if(filename != "." && filename != "..") filenames.push_back(filename);
+            cout << "filename = " << filename << endl;
+        }
+        closedir(dir);
+    }
+    else
+    {
+        /* could not open directory */
+        cout << "Error: couldn't open directory " << path << endl;
+    }
+    return filenames;
+}

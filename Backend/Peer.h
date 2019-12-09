@@ -32,7 +32,7 @@ typedef unsigned int Port;
 
 
 #define MAX_SIZE 8192
-#define DEF_IMG(sz1) Image::readImage("/home/wan/Documents/MyData/SPACE.JPG", sz1)
+#define DEF_IMG(sz1) Image::readImage("/home/wan/Documents/PICky/SPACE.JPG", sz1)
 
 enum opType
 {
@@ -45,17 +45,17 @@ enum opType
     GET_ALL_USERS = 5,
     CACHE_MSG = 6,
     NOTIFY_VIEW = 7,
-    
+    RETRIEVE_USER_PREVIEWS = 8,
+    RETRIEVE_PREVIOUSLY_SENT = 9,
     //broker and peer
     ANSWER_QUOTA_REQUEST,
     ANSWER_IMAGE_REQUEST,
-    ANSWER_SET_QUOTA,
     //peer
     GET_USER_PREVIEWS,
     REQUEST_IMAGE,
     REQUEST_QUOTA,
     SET_QUOTA,
-    RETRIEVE_USER_PREVIEWS = 55,
+    
  
 };
 
@@ -85,6 +85,7 @@ public:
     int getPreviews();
     int getUserPreviews(string otherpeer);
     int retrieveUserPreviews();
+    int retrievePreviouslySent();
 
     int getAllUsers(vector<string> &usernames);
 
@@ -112,13 +113,13 @@ public:
     void setQuotaGrantedImage(string imageName, int quota);
     void clearTempImages();
 
-    Image loadMyImage(string path, int quota);
-    string getMyTitles();
     string getMyImages();
     void uploadLocalImage(string path);
     
     void loadReceiverQuota();
     void writeBackQuotaDB();
+
+    vector<Image> getImagesOwnedBy(string otherpeer);
     
     vector<imageQuotaRequest> quotaRequests;
     vector<imageQuotaRequest> imageRequests;
@@ -141,29 +142,12 @@ private:
     string sessionToken;
     string defaultImage;
     atomic<int> rpcID;
-    //map<string, string> imageToPeer;
-
-    
 
     pair<IP, Port> getAddress(string otherPeer);
     void listenerRun();
 
     map<opType, int> argCount;
 
-    /*set<string> myImageTitles;
-    set<string> grantedImagesTitles;
-    set<string> previewsTitles;*/
-
-    vector<string> tempImages;
-
-
-    
-
-
-    
-
-    //void cacheDB(string path, set<string> &cache);
-    //void appendFileAndCache(string path, set<string> &cache, string entry);
 };
 //#include "Peer.cpp"
 #endif // PEER_H

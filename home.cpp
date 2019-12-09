@@ -28,6 +28,7 @@ home::home(QWidget *parent) :
     ui(new Ui::home)
 {
     ui->setupUi(this);
+    this->setStyleSheet("background-image:url(\"/home/wan/Documents/PICky/sky.jpeg\"); background-position: center;");
     ui->stackedWidget->setCurrentIndex(2);
 
 
@@ -107,7 +108,7 @@ void home::on_pushButton_6_clicked()
     ui->listView->clear();
 
     int res =peer.getPreviews();
-    if (res == -1)  QMessageBox::information (this, "Previews", "Could not connect to the server");
+    if (res == -1)  QMessageBox::information (this, "Previews", "Could not reach the server");
     else  {
         ui->stackedWidget->setCurrentIndex(0);
         QDir directory(peer.PREVIEWS.c_str());
@@ -216,4 +217,18 @@ void home::on_pushButton_4_clicked()
     GrantedImagesList * gil = new GrantedImagesList;
     gil->show();
 
+}
+
+void home::on_pushButton_9_clicked()
+{
+    int res = peer.retrieveUserPreviews();
+    if (res == -1 ) QMessageBox::information (this, "Uploaded Messages", "Could not connect to the server");
+    else QMessageBox::information (this, "Uploaded Messages", "Success!");
+}
+
+void home::on_pushButton_10_clicked()
+{
+    int res = peer.retrievePreviouslySent();
+    if (res == -1 ) QMessageBox::information (this, "Shared Messages", "Could not connect to the server");
+    else QMessageBox::information (this, "Shared Messages", "Success!");
 }
