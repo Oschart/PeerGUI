@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
+#include <dirent.h>
 #include "Image.h"
 
 
@@ -54,6 +55,6 @@ void saveDBRecord(string path, string key, string data);
 
 
 void filter(string &s);
-vector<string> scrap_dir();
+vector<string> scrap_dir(string path);
 
 #endif

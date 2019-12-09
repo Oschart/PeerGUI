@@ -936,7 +936,7 @@ void Peer::clearTempImages()
     vector<string> filenames = scrap_dir(PREVIEWS);
     for(string name : filenames)
     {
-        deleteFile(name);
+        deleteFile(PREVIEWS + name);
     }
 
 }
