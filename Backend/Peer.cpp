@@ -908,12 +908,6 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             msgBody = "1";
             break;
         }
-        case ANSWER_SET_QUOTA:
-        {
-            cout << "The quota is set\n";
-            msgBody = "1";
-            break;
-        }
         case SET_QUOTA:
         {
             string sender = VectorToString(args[0]);

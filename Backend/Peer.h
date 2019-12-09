@@ -50,7 +50,6 @@ enum opType
     //broker and peer
     ANSWER_QUOTA_REQUEST,
     ANSWER_IMAGE_REQUEST,
-    ANSWER_SET_QUOTA,
     //peer
     GET_USER_PREVIEWS,
     REQUEST_IMAGE,
