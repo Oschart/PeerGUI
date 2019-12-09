@@ -21,12 +21,14 @@ ApproveRequestDialog::~ApproveRequestDialog()
 
 void ApproveRequestDialog::on_pushButton_2_clicked()
 {
-    peer.answerImageRequest(index, 0);
+    if (newImage) peer.answerImageRequest(index, 0);
+    else peer.answerQuotaRequest(index, 0);
     close();
 }
 
 void ApproveRequestDialog::on_pushButton_clicked()
 {
-    peer.answerImageRequest(index, 1);
+    if (newImage) peer.answerImageRequest(index, 1);
+    else peer.answerQuotaRequest(index, 1);
     close();
 }
