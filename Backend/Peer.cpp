@@ -20,6 +20,8 @@ Peer::Peer(char *_myHostname, int _myPort, char *_shostname, int _sport) : Serve
     argCount[GET_USER_PREVIEWS] = 1;
     argCount[NOTIFY_VIEW] = 2;
 
+    loadReceiverQuota();
+
 }
 
 bool Peer::execute(Message *_message)
@@ -975,6 +977,41 @@ void Peer::appendFileAndCache(string path, set<string> &cache, string entry)
     }
 }
 */
+
+void Peer::loadReceiverQuota()
+{
+    ifstream in(Quota_db);
+    string line;
+    while(getline(in, line))
+    {
+        stringstream st(line);
+        string title, receiver;
+        string entry;
+        int quota;
+        in >> title;
+        while(getline(st, entry, '$'))
+        {
+            in >> receiver >> quota;
+            receiverQuota[title][receiver] = quota;
+        }
+    }
+    in.close();
+}
+
+void Peer::writeBackQuotaDB()
+{
+    ofstream out(Quota_db);
+    string line;
+    for(auto it: receiverQuota)
+    {
+        out << it.first << ' ';
+        for(auto p: it.second)
+        {
+            out << p.first << ',' << p.second << '$';
+        }
+    }
+    out.close();
+}
 
 Peer::~Peer()
 {
