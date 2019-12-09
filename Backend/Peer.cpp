@@ -19,6 +19,7 @@ Peer::Peer(char *_myHostname, int _myPort, char *_shostname, int _sport) : Serve
     argCount[ANSWER_IMAGE_REQUEST] = 3;
     argCount[GET_USER_PREVIEWS] = 1;
     argCount[NOTIFY_VIEW] = 2;
+    argCount[RETRIEVE_PREVIOUSLY_SENT] = 1;
 
     loadReceiverQuota();
 }
@@ -87,6 +88,7 @@ int Peer::login(string username, string password)
             createFolder(PREVIEWS);
 
             retrieveUserPreviews();
+            retrievePreviouslySent();
 
             result = 1;
         }
