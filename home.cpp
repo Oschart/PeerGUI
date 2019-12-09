@@ -158,7 +158,7 @@ void home::on_pushButton_7_clicked()
     auto requests = peer.imageRequests;
     foreach(auto request, requests){
         string cop = request.imageName;
-        removeUserfromName(cop);
+        //removeUserfromName(cop);
         string item =(string("The user ") + request.requester + string(" has requested ") + to_string(request.quota) + string(" views of your image ") + cop);
         auto widg = new QListWidgetItem(item.c_str());
         widg->setData(Qt::UserRole, request.requester.c_str());
@@ -171,7 +171,7 @@ void home::on_pushButton_7_clicked()
     requests = peer.quotaRequests;
     foreach(auto request, requests){
         string cop = request.imageName;
-        removeUserfromName(cop);
+        //removeUserfromName(cop);
         string item =(string("The user ") + request.requester + string(" has requested ") + to_string(request.quota) + string(" extra views of your granted image ") + cop);
         auto widg = new QListWidgetItem(item.c_str());
         widg->setData(Qt::UserRole, request.requester.c_str());

@@ -705,7 +705,7 @@ void Peer::approveImageRequest(string otherpeer, string imageName, int quota)
     string args = string("1") + separator + username + separator + imageName + separator + flatImage;
     sendRequest(ANSWER_IMAGE_REQUEST, otherpeer, args);
 
-    removeUserfromName(imageName);
+    //removeUserfromName(imageName);
     receiverQuota[imageName][otherpeer] = quota;
 }
 
@@ -738,7 +738,7 @@ void Peer::approveQuotaRequest(string otherpeer, string imageName, int quota)
     string args = string("1") + separator + username + separator + imageName + separator + to_string(quota);
     sendRequest(ANSWER_QUOTA_REQUEST, otherpeer, args);
     
-    removeUserfromName(imageName);
+    //removeUserfromName(imageName);
     receiverQuota[imageName][otherpeer] = quota;
 }
 
@@ -793,14 +793,16 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
         {
         case REQUEST_IMAGE:
         {
+            cout << "REQUEST IMAGE BEGIN" << endl;
             string other_username = VectorToString(args[0]);
             string title = VectorToString(args[1]);
             filter(title);
+            cout << "after filter   " << title << endl;
             int quota = stoll(VectorToString(args[2]));
 
             imageQuotaRequest request(other_username, title, quota);
             imageRequests.push_back(request);
-
+            cout << "request image end" << endl;
             msgBody = "1";  // Request received
 
 
@@ -809,6 +811,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
         }
         case ANSWER_IMAGE_REQUEST:
         {
+
             string response = VectorToString(args[0]);
             string sender = VectorToString(args[1]);
             string imageName = VectorToString(args[2]);

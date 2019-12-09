@@ -22,7 +22,7 @@ GrantedImagesList::GrantedImagesList(QWidget *parent) :
         cout << "Name Without User2 " << nameWithoutUser << endl;
         auto item = new QListWidgetItem((nameWithoutUser + " -- " + img.getOwner().c_str() + " -- " + to_string(quota).c_str() + " views remaining").c_str());
         item->setSizeHint(QSize(item->sizeHint().width(), 50));
-        item->setData(Qt::UserRole, filename);
+        item->setData(Qt::UserRole, nameWithoutUser.c_str());
         item->setData(Qt::DecorationPropertyRole, img.getOwner().c_str());
         ui->listWidget->addItem(item);
     }
