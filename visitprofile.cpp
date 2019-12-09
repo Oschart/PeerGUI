@@ -16,7 +16,7 @@ visitProfile::visitProfile(std::string user, QWidget *parent) :
     ui->listView->clear();
 
     int res =peer.getUserPreviews(user);
-    if (res == -1)  {QMessageBox::information (this, "Previews", "Could not connect to the server");}
+    if (res == -1)  {QMessageBox::information (this, "Previews", (string("Could not reach the user ") + user).c_str());}
     else  {
         QDir directory(peer.PREVIEWS.c_str());
         QStringList images = directory.entryList(QStringList() ,QDir::Files);

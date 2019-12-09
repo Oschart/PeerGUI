@@ -107,7 +107,7 @@ void home::on_pushButton_6_clicked()
     ui->listView->clear();
 
     int res =peer.getPreviews();
-    if (res == -1)  QMessageBox::information (this, "Previews", "Could not connect to the server");
+    if (res == -1)  QMessageBox::information (this, "Previews", "Could not reach the server");
     else  {
         ui->stackedWidget->setCurrentIndex(0);
         QDir directory(peer.PREVIEWS.c_str());
