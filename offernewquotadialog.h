@@ -16,6 +16,9 @@ public:
     explicit OfferNewQuotaDialog(string, string, QWidget *parent = nullptr);
     ~OfferNewQuotaDialog();
 
+private slots:
+    void on_buttonBox_accepted();
+
 private:
     Ui::OfferNewQuotaDialog *ui;
     string user;
