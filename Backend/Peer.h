@@ -20,24 +20,20 @@
 #include "Server.h"
 //#include "ParseUtil.cpp"
 
-#define BROKER_IP "10.7.57.213"
+#define BROKER_IP "full_slack"
 #define BROKER_PORT 2468
 typedef unsigned int IP;
 typedef unsigned int Port;
 
 #define separator ","
 #define CODED "_c"
-#define MyData "/home/wan/Documents/MyData/"
-#define MyImages "/home/wan/Documents/MyData/MyImages/"
+#define rootDIR "/home/wan/Documents/PICky/"
 
-#define PREVIEWS "/home/wan/Documents/MyData/Previews/"
-#define GrantedImages "/home/wan/Documents/MyData/GrantedImages/"
-
-#define MyImages_db "/home/wan/Documents/MyData/my_images_db.txt"
-#define GrantedImages_db "/home/wan/Documents/MyData/granted_images_db.txt"
-#define Previews_db "/home/wan/Documents/MyData/previews_db.txt"
-
-#define Quota_db "/home/wan/Documents/MyData/quota_db.txt"
+string MyData;
+string MyImages;
+string PREVIEWS;
+string GrantedImages;
+string Quota_db;
 
 #define MAX_SIZE 8192
 #define DEF_IMG(sz1) Image::readImage("/home/wan/Documents/MyData/SPACE.JPG", sz1)
@@ -62,15 +58,7 @@ enum opType
     REQUEST_IMAGE,
     REQUEST_QUOTA,
     SET_QUOTA,
-    
-    /*ANSWER_QUOTA_REQUEST_RELAY,
-    ANSWER_IMAGE_REQUEST_RELAY,
-    ANSWER_SET_QUOTA_RELAY,
-    //peer
-    GET_USER_PREVIEWS_RELAY,
-    REQUEST_IMAGE_RELAY,
-    REQUEST_QUOTA_RELAY,
-    SET_QUOTA_RELAY,*/
+ 
 };
 
 using namespace std;
