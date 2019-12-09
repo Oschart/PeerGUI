@@ -20,8 +20,6 @@ Peer::Peer(char *_myHostname, int _myPort, char *_shostname, int _sport) : Serve
     argCount[GET_USER_PREVIEWS] = 1;
     argCount[NOTIFY_VIEW] = 2;
 
-    loadReceiverQuota();
-
 }
 
 bool Peer::execute(Message *_message)
@@ -622,8 +620,8 @@ int Peer::setImageQuota(string otherpeer, string imageName, int quota)
         toBeSent->setOperation(CACHE_MSG);
         string content = string((char *)toBeSent->getMessage(), toBeSent->getMessageSize());
         content = sessionToken + separator + otherpeer + separator + to_string(SET_QUOTA) + separator + content;
-        toBeSent->setMessagializeCliente(stringToCharPtr(content), content.length());
-        this->udpSocket->init(BROKER_IP, BROKER_PORT);
+        toBeSent->setMessage(stringToCharPtr(content), content.length());
+        this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
         if (this->execute(toBeSent)){
             int rpc_id = toBeSent->getRPCId();
             Message *received = this->rpcToMsg[rpc_id];
@@ -977,41 +975,6 @@ void Peer::appendFileAndCache(string path, set<string> &cache, string entry)
     }
 }
 */
-
-void Peer::loadReceiverQuota()
-{
-    ifstream in(Quota_db);
-    string line;
-    while(getline(in, line))
-    {
-        stringstream st(line);
-        string title, receiver;
-        string entry;
-        int quota;
-        in >> title;
-        while(getline(st, entry, '$'))
-        {
-            in >> receiver >> quota;
-            receiverQuota[title][receiver] = quota;
-        }
-    }
-    in.close();
-}
-
-void Peer::writeBackQuotaDB()
-{
-    ofstream out(Quota_db);
-    string line;
-    for(auto it: receiverQuota)
-    {
-        out << it.first << ' ';
-        for(auto p: it.second)
-        {
-            out << p.first << ',' << p.second << '$';
-        }
-    }
-    out.close();
-}
 
 Peer::~Peer()
 {
