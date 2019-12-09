@@ -202,7 +202,6 @@ int Peer::getPreviews()
 
             cout << "Image Title = " << storedImageTitle << endl;
 
-            tempImages.push_back(path);
         }
 
         delete received;
@@ -246,7 +245,6 @@ int Peer::retrieveUserPreviews()
 
             cout << "Image Title = " << storedImageTitle << endl;
 
-            tempImages.push_back(path);
         }
 
         delete received;
@@ -464,7 +462,7 @@ int Peer::requestImageQuota(string otherpeer, string imageName, int quota)
     }
     //removeUserfromName(imageName);
     int res;
-    cout << "Peer Address was received successfully, requesting image quota...\n";
+    cout << "Peer Address was received successfully, requesting image ...\n";
     this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
 
     string args = username + separator + imageName + separator + to_string(quota);
@@ -535,7 +533,7 @@ int Peer::notifyView(string title)
         return -1;
     }
     int res;
-    cout << "Peer Address was received successfully, requesting image quota...\n";
+    cout << "Peer Address was received successfully, notifying...\n";
     this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
 
     string args = username + separator + title;
@@ -935,11 +933,11 @@ void Peer::setQuotaGrantedImage(string imageName, int newQuota)
 
 void Peer::clearTempImages()
 {
-    for(string name : tempImages)
+    vector<string> filenames = scrap_dir(PREVIEWS);
+    for(string name : filenames)
     {
         deleteFile(name);
     }
-    tempImages.clear();
 
 }
 

@@ -153,13 +153,6 @@ private:
     /*set<string> myImageTitles;
     set<string> grantedImagesTitles;
     set<string> previewsTitles;*/
-
-    vector<string> tempImages;
-
-
-    
-
-
     
 
     //void cacheDB(string path, set<string> &cache);
