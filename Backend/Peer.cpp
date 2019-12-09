@@ -738,7 +738,7 @@ void Peer::approveQuotaRequest(string otherpeer, string imageName, int quota)
     string args = string("1") + separator + username + separator + imageName + separator + to_string(quota);
     sendRequest(ANSWER_QUOTA_REQUEST, otherpeer, args);
     
-    //removeUserfromName(imageName);
+    removeUserfromName(imageName);
     receiverQuota[imageName][otherpeer] = quota;
 }
 
@@ -867,7 +867,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             int quota = stoll(VectorToString(args[2]));
             setQuotaGrantedImage(image_name, quota);
             msgBody = "1";  // Request received
-            
+
             receiverQuota[imageName][sender] = quota;
             break;
         }
@@ -1019,6 +1019,7 @@ void Peer::writeBackQuotaDB()
         {
             out << p.first << ',' << p.second << '$';
         }
+        out << endl;
     }
     out.close();
 }
