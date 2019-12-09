@@ -32,7 +32,7 @@ typedef unsigned int Port;
 
 
 #define MAX_SIZE 8192
-#define DEF_IMG(sz1) Image::readImage("/home/wan/Documents/MyData/SPACE.JPG", sz1)
+#define DEF_IMG(sz1) Image::readImage("/home/wan/Documents/PICky/SPACE.JPG", sz1)
 
 enum opType
 {
