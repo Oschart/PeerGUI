@@ -201,7 +201,7 @@ int Peer::getPreviews()
             Image::writeImage(path, previews[i].getContent());
 
             cout << "Image Title = " << storedImageTitle << endl;
-            
+
             tempImages.push_back(path);
         }
 
@@ -245,7 +245,7 @@ int Peer::retrieveUserPreviews()
             Image::writeImage(path, previews[i].getContent());
 
             cout << "Image Title = " << storedImageTitle << endl;
-            
+
             tempImages.push_back(path);
         }
 
@@ -278,7 +278,7 @@ int Peer::getAllUsers(vector<string> &usernames)
         vector<uint8_t> flatArgs = Image::charPtrToVector((char *)received->getMessage(), received->getMessageSize());
 
         usernames = extractArgs(VectorToString(flatArgs));
-        
+
         delete received;
         res = 1;
     }
@@ -315,9 +315,9 @@ int Peer::getUserPreviews(string otherpeer)
         Message *received = this->rpcToMsg[rpc_id];
         this->rpcToMsg.erase(rpc_id);
         cout << "USER PREVIEWS RECEIVED\n";
-        
+
         vector<uint8_t> flatArgs = Image::charPtrToVector((char *)received->getMessage(), received->getMessageSize());
-        
+
         vector<Image> previews = extractImages(flatArgs);
         for (int i = 0; i < previews.size(); i++)
         {
@@ -347,7 +347,7 @@ int Peer::uploadImagePreview(string imageName, string imagePath)
     vector<uint8_t> flattenedV = flattenImages(images);
     string flattenedP(flattenedV.begin(), flattenedV.end());
     string args = this->sessionToken + separator + flattenedP;
-    
+
     Message *toBeSent = new Message(UPLOAD_PREVIEW, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
     int res;
@@ -682,7 +682,7 @@ void Peer::answerImageRequest(int request_id, int decision)
         denyImageRequest(request.requester, request.imageName);
     }
     imageRequests.erase(imageRequests.begin() + request_id);
-    
+
 }
 
 void Peer::denyImageRequest(string otherpeer, string imageName)
@@ -705,6 +705,7 @@ void Peer::approveImageRequest(string otherpeer, string imageName, int quota)
     string args = string("1") + separator + username + separator + imageName + separator + flatImage;
     sendRequest(ANSWER_IMAGE_REQUEST, otherpeer, args);
 
+    removeUserfromName(imageName);
     receiverQuota[imageName][otherpeer] = quota;
 }
 
@@ -733,10 +734,11 @@ void Peer::denyQuotaRequest(string otherpeer, string imageName)
 
 void Peer::approveQuotaRequest(string otherpeer, string imageName, int quota)
 {
-
+    cout << "From approve: image name = " << imageName << endl;
     string args = string("1") + separator + username + separator + imageName + separator + to_string(quota);
     sendRequest(ANSWER_QUOTA_REQUEST, otherpeer, args);
-
+    
+    removeUserfromName(imageName);
     receiverQuota[imageName][otherpeer] = quota;
 }
 
@@ -761,7 +763,7 @@ void Peer::sendRequest(opType operation, string otherpeer, string args)
         Message *received = this->rpcToMsg[rpc_id];
         this->rpcToMsg.erase(rpc_id);
         string content = string((char *)received->getMessage(), received->getMessageSize());
-        
+
         // Don't care about the response: it's an order
         delete received;
     }
@@ -790,18 +792,18 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
         switch (op)
         {
         case REQUEST_IMAGE:
-        {   
+        {
             string other_username = VectorToString(args[0]);
             string title = VectorToString(args[1]);
             filter(title);
             int quota = stoll(VectorToString(args[2]));
-            
+
             imageQuotaRequest request(other_username, title, quota);
             imageRequests.push_back(request);
-            
+
             msgBody = "1";  // Request received
-            
-            
+
+
             //SaveQuotaRecord(other_username, title, quota);
             break;
         }
@@ -836,20 +838,20 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             string title = VectorToString(args[1]);
             filter(title);
             int quota = stoll(VectorToString(args[2]));
-            
+
             imageQuotaRequest request(other_username, title, quota);
             quotaRequests.push_back(request);
-            
+
             msgBody = "1";  // Request received
-            
-            
+
+
             //SaveQuotaRecord(other_username, title, quota);
             break;// TODO: ask user for permission
             msgBody = "1";
             break;
         }
         case ANSWER_SET_QUOTA:
-        {   
+        {
             cout << "The quota is set\n";
             msgBody = "1";
             break;
@@ -878,13 +880,12 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             string response = VectorToString(args[0]);
             string sender = VectorToString(args[1]);
             string imageName = VectorToString(args[2]);
-            
+
             if(response == "1"){
                 cout << "Quota request approved\n";
                 int quota = stoll(VectorToString(args[3]));
                 //string full_image_name = addUsertoName(imageName, sender);
                 string full_image_name = imageName;
-                receiverQuota[imageTitle][viewer] = quota;
                 setQuotaGrantedImage(full_image_name, quota);
             }
             else if(response == "0"){
@@ -918,7 +919,7 @@ void Peer::setQuotaGrantedImage(string imageName, int newQuota)
     int sz;
     string codifiedPath = GrantedImages + imageName;
     vector<uint8_t> cod = Image::readImage(codifiedPath, sz);
-    
+
     Image img = Image(cod);
     img = Image(DEF_IMG(sz), img.getContent(), img.getOwner(), newQuota);
 
