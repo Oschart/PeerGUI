@@ -121,7 +121,7 @@ public:
 
     Message *doOperation(Message *_received, IP user_ip, Port user_port);
 
-    void notifyView(string imageName);
+    int notifyView(string imageName);
     void setQuotaGrantedImage(string imageName, int quota);
     void clearTempImages();
 

@@ -507,7 +507,7 @@ int Peer::requestImageQuota(string otherpeer, string imageName, int quota)
     return res;
 }
 
-void Peer::notifyView(string title)
+int Peer::notifyView(string title)
 {
     string otherpeer = removeUserfromName(title);
 
