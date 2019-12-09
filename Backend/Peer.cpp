@@ -341,13 +341,15 @@ int Peer::retrievePreviouslySent()
 {
     vector<string> usernames;
     getAllUsers(usernames);
+    int res = 1;
     for (string otherpeer : usernames)
     {
+        if(otherpeer == username) continue;
         pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
         if (peerToAddress == make_pair(0U, 0U))
         {
             cout << "There's no peer record with such name in the broker\n";
-            return 0;
+            continue;
         }
         cout << "Peer Address was received successfully, getting previews...\n";
         this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
@@ -383,8 +385,9 @@ int Peer::retrievePreviouslySent()
             cout << "Previously Sent Timed Out On " << otherpeer << "\n";
             res = -1;
         }
-        return res;
+        
     }
+    return res;
 }
 
 int Peer::uploadImagePreview(string imageName, string imagePath)
@@ -986,7 +989,7 @@ vector<Image> Peer::getImagesOwnedBy(string otherpeer)
     vector<string> usernames = scrap_dir(GrantedImages);
     for(string title: usernames)
     {
-        string path = title;
+        string path = GrantedImages + title;
         string uname = removeUserfromName(title);
         if(uname == otherpeer)
         {
