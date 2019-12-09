@@ -29,11 +29,12 @@ void ViewGrantedImageDialog::on_buttonBox_accepted()
     Image img (Image::readImage((peer.GrantedImages + fileName), sz));
     quota = img.getQuota();
     if (quota){
+        cout << "The remaining quota is " << quota << endl;
         Image newCodified (DEF_IMG(sz), img.getContent(), img.getOwner(), quota-1);
         Image::writeImage(peer.GrantedImages+fileName, newCodified.getCodified());
         Image::writeImage("temp.temp", img.getContent());
         GrantedImagePreview* gip = new GrantedImagePreview("temp.temp");
-        deleteFile("temp.temp");
+        //deleteFile("temp.temp");
         gip->show();
         peer.notifyView(fileName);
     }

@@ -805,7 +805,6 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             cout << "request image end" << endl;
             msgBody = "1";  // Request received
 
-
             //SaveQuotaRecord(other_username, title, quota);
             break;
         }
@@ -818,7 +817,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
 
             if(response == "1"){
                 cout << "Image request approved\n";
-                cout << "the size of args[3] " << args[3].size() << endl;
+                //cout << "the size of args[3] " << args[3].size() << endl;
                 cout << "the sender " << sender << endl;
                 cout << "the image name " << imageName << endl;
                 string full_image_name = addUsertoName(imageName, sender);
@@ -868,6 +867,8 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             int quota = stoll(VectorToString(args[2]));
             setQuotaGrantedImage(image_name, quota);
             msgBody = "1";  // Request received
+            
+            receiverQuota[imageName][sender] = quota;
             break;
         }
         case NOTIFY_VIEW:
@@ -889,7 +890,9 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
                 int quota = stoll(VectorToString(args[3]));
                 //string full_image_name = addUsertoName(imageName, sender);
                 string full_image_name = imageName;
+                cout << "Full Image name = " << full_image_name << endl;
                 setQuotaGrantedImage(full_image_name, quota);
+               
             }
             else if(response == "0"){
                 cout << "Quota request denied\n";
