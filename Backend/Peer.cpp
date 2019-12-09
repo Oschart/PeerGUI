@@ -339,7 +339,8 @@ int Peer::getUserPreviews(string otherpeer)
 
 int Peer::retrievePreviouslySent()
 {
-    vector<string> usernames = getAllUsers();
+    vector<string> usernames;
+    getAllUsers(usernames);
     for (string otherpeer : usernames)
     {
         pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
@@ -996,7 +997,7 @@ vector<Image> Peer::getImagesOwnedBy(string otherpeer)
         if(uname == otherpeer)
         {
             int sz;
-            imgs.push_back(Image(Image::readImage(path, sz))));
+            imgs.push_back(Image(Image::readImage(path, sz)));
         }
     }
     return imgs;
