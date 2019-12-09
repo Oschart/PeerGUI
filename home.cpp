@@ -217,3 +217,17 @@ void home::on_pushButton_4_clicked()
     gil->show();
 
 }
+
+void home::on_pushButton_9_clicked()
+{
+    int res = peer.retrieveUserPreviews();
+    if (res == -1 ) QMessageBox::information (this, "Uploaded Messages", "Could not connect to the server");
+    else QMessageBox::information (this, "Uploaded Messages", "Success!");
+}
+
+void home::on_pushButton_10_clicked()
+{
+    int res = peer.retrievePreviouslySent();
+    if (res == -1 ) QMessageBox::information (this, "Shared Messages", "Could not connect to the server");
+    else QMessageBox::information (this, "Shared Messages", "Success!");
+}
