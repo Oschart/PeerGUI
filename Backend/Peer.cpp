@@ -578,7 +578,7 @@ void Peer::notifyView(string title)
     return res;
 }
 
-void Peer::setImageQuota(string otherpeer, string imageName, int quota)
+int Peer::setImageQuota(string otherpeer, string imageName, int quota)
 {
     pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
     if (peerToAddress == make_pair(0U, 0U))

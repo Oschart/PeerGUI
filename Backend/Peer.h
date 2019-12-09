@@ -96,7 +96,7 @@ public:
     int uploadImagePreview(string imageName, string imagePath);
     int requestImage(string otherpeer, string imageName, int quota);
     int requestImageQuota(string otherpeer, string imageName, int quota);
-    void setImageQuota(string otherpeer, string imageName, int quota);
+    int setImageQuota(string otherpeer, string imageName, int quota);
 
     void sendRequest(opType operation, string otherpeer, string args);
 
