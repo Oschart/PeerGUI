@@ -10,7 +10,9 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
-    return a.exec();
+    auto smth = a.exec();
+    peer.writeBackQuotaDB();
+    return smth;
 //    int sz, sz2;
 
 //    Image someimg(DEF_IMG(sz), Image::readImage("Love.jpg", sz2), "Fadi", 11);
