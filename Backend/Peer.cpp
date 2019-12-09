@@ -723,8 +723,6 @@ void Peer::approveQuotaRequest(string otherpeer, string imageName, int quota)
     receiverQuota[imageName][otherpeer] = quota;
 }
 
-// --------------------------------------
-
 void Peer::sendRequest(opType operation, string otherpeer, string args)
 {
     pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
