@@ -20,6 +20,8 @@ Peer::Peer(char *_myHostname, int _myPort, char *_shostname, int _sport) : Serve
     argCount[GET_USER_PREVIEWS] = 1;
     argCount[NOTIFY_VIEW] = 2;
 
+    loadReceiverQuota();
+
 }
 
 bool Peer::execute(Message *_message)
@@ -604,6 +606,7 @@ int Peer::setImageQuota(string otherpeer, string imageName, int quota)
         if (content == "1")
         {
             cout << "Setting image quota request sent successfully to peer\n";
+            receiverQuota[imageName][otherpeer] = quota;
             res = 1;
         }
         else
@@ -631,6 +634,7 @@ int Peer::setImageQuota(string otherpeer, string imageName, int quota)
             if (content == "1")
             {
                 cout << "View notification sent successfully to broker\n";
+                receiverQuota[imageName][otherpeer] = quota;
                 res = 2;
             }
             else
@@ -685,6 +689,8 @@ void Peer::approveImageRequest(string otherpeer, string imageName, int quota)
     string flatImage = VectorToString(flattenImages(imageVec));
     string args = string("1") + separator + username + separator + imageName + separator + flatImage;
     sendRequest(ANSWER_IMAGE_REQUEST, otherpeer, args);
+
+    receiverQuota[imageName][otherpeer] = quota;
 }
 
 // --------------------------------------------------
@@ -716,9 +722,8 @@ void Peer::approveQuotaRequest(string otherpeer, string imageName, int quota)
     string args = string("1") + separator + username + separator + imageName + separator + to_string(quota);
     sendRequest(ANSWER_QUOTA_REQUEST, otherpeer, args);
 
+    receiverQuota[imageName][otherpeer] = quota;
 }
-
-// --------------------------------------
 
 void Peer::sendRequest(opType operation, string otherpeer, string args)
 {
@@ -843,6 +848,14 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             int quota = stoll(VectorToString(args[2]));
             setQuotaGrantedImage(image_name, quota);
             msgBody = "1";  // Request received
+            break;
+        }
+        case NOTIFY_VIEW:
+        {
+            string viewer = VectorToString(args[0]);
+            string imageTitle = VectorToString(args[1]);
+            receiverQuota[imageTitle][viewer]--;
+            msgBody = "1";
             break;
         }
         case ANSWER_QUOTA_REQUEST:
@@ -975,6 +988,41 @@ void Peer::appendFileAndCache(string path, set<string> &cache, string entry)
     }
 }
 */
+
+void Peer::loadReceiverQuota()
+{
+    ifstream in(Quota_db);
+    string line;
+    while(getline(in, line))
+    {
+        stringstream st(line);
+        string title, receiver;
+        string entry;
+        int quota;
+        in >> title;
+        while(getline(st, entry, '$'))
+        {
+            in >> receiver >> quota;
+            receiverQuota[title][receiver] = quota;
+        }
+    }
+    in.close();
+}
+
+void Peer::writeBackQuotaDB()
+{
+    ofstream out(Quota_db);
+    string line;
+    for(auto it: receiverQuota)
+    {
+        out << it.first << ' ';
+        for(auto p: it.second)
+        {
+            out << p.first << ',' << p.second << '$';
+        }
+    }
+    out.close();
+}
 
 Peer::~Peer()
 {
