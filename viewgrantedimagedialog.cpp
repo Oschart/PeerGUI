@@ -1,12 +1,13 @@
 #include "viewgrantedimagedialog.h"
 #include "ui_viewgrantedimagedialog.h"
+#include "requestimagedialog.h"
 #include "Backend/Peer.h"
 #include "Backend/ParseUtil.h"
 #include "grantedimagepreview.h"
 
-ViewGrantedImageDialog::ViewGrantedImageDialog(std::string _filename, QWidget *parent) :
+ViewGrantedImageDialog::ViewGrantedImageDialog(std::string _own, std::string _filename, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ViewGrantedImageDialog), fileName(_filename)
+    ui(new Ui::ViewGrantedImageDialog), fileName(_filename), owner(_own)
 {
     ui->setupUi(this);
 }
@@ -38,4 +39,9 @@ void ViewGrantedImageDialog::on_buttonBox_accepted()
         GrantedImagePreview* gip = new GrantedImagePreview(GrantedImages + fileName);
         gip->show();
     }
+}
+
+void ViewGrantedImageDialog::on_pushButton_clicked()
+{
+    RequestImageDialog* rid = new RequestImageDialog(owner, fileName, false);
 }

@@ -18,6 +18,7 @@ GrantedImagesList::GrantedImagesList(QWidget *parent) :
         auto item = new QListWidgetItem(filename + " -- " + img.getOwner().c_str() + " -- " + to_string(quota).c_str() + " views remaining");
         item->setSizeHint(QSize(item->sizeHint().width(), 50));
         item->setData(Qt::UserRole, filename);
+        item->setData(Qt::DecorationPropertyRole, img.getOwner().c_str());
         ui->listWidget->addItem(item);
     }
 }
@@ -29,7 +30,7 @@ GrantedImagesList::~GrantedImagesList()
 
 void GrantedImagesList::on_listWidget_itemClicked(QListWidgetItem *item)
 {
-    ViewGrantedImageDialog* dlg = new ViewGrantedImageDialog(item->data(Qt::UserRole).toString().toStdString());
+    ViewGrantedImageDialog* dlg = new ViewGrantedImageDialog(item->data(Qt::DecorationPropertyRole).toString().toStdString(), item->data(Qt::UserRole).toString().toStdString());
     dlg->show();
     close();
 }

@@ -475,6 +475,7 @@ int Peer::requestImageQuota(string otherpeer, string imageName, int quota)
     else
     {
         cout << "Request Image Quota operation timed out!, will send to the broker\n";
+        toBeSent->setOperation(CACHE_MSG);
         string content = string((char *)toBeSent->getMessage(), toBeSent->getMessageSize());
         content = sessionToken + separator + otherpeer + separator + to_string(REQUEST_QUOTA) + separator + content;
         toBeSent->setMessage(stringToCharPtr(content), content.length());
@@ -774,6 +775,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
         }
         default:
             cerr << "Peer: Unsupported Operation!\n";
+            cout << op << endl;
             break;
         }
     }

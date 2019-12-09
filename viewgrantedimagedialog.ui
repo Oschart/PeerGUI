@@ -13,28 +13,51 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>You are about to view an image granted to you by another user. If you have enough quota, one view will be deducted. If not, you will be shown the default astronaut image. Would you like to proceed? </string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
-  </layout>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>-20</y>
+     <width>341</width>
+     <height>151</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>You are about to view an image granted to you by another user. If you have enough quota, one view will be deducted. If not, you will be shown the default astronaut image. Would you like to proceed? </string>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QDialogButtonBox" name="buttonBox">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>130</y>
+     <width>166</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>130</y>
+     <width>181</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Request Quota Update</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections>
