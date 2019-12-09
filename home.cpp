@@ -157,22 +157,26 @@ void home::on_pushButton_7_clicked()
     ui->listWidget->clear();
     auto requests = peer.imageRequests;
     foreach(auto request, requests){
-        string item =(string("The user ") + request.requester + string(" has requested ") + to_string(request.quota) + string(" views of your image ") + request.imageName);
+        string cop = request.imageName;
+        removeUserfromName(cop);
+        string item =(string("The user ") + request.requester + string(" has requested ") + to_string(request.quota) + string(" views of your image ") + cop);
         auto widg = new QListWidgetItem(item.c_str());
         widg->setData(Qt::UserRole, request.requester.c_str());
         widg->setData(Qt::DecorationRole, request.quota);
-        widg->setData(Qt::DisplayPropertyRole, request.imageName.c_str());
+        widg->setData(Qt::DisplayPropertyRole, cop.c_str());
 
         ui->listWidget->addItem(widg);
     }
     ui->listWidget_2->clear();
     requests = peer.quotaRequests;
     foreach(auto request, requests){
-        string item =(string("The user ") + request.requester + string(" has requested ") + to_string(request.quota) + string(" extra views of your granted image ") + request.imageName);
+        string cop = request.imageName;
+        removeUserfromName(cop);
+        string item =(string("The user ") + request.requester + string(" has requested ") + to_string(request.quota) + string(" extra views of your granted image ") + cop);
         auto widg = new QListWidgetItem(item.c_str());
         widg->setData(Qt::UserRole, request.requester.c_str());
         widg->setData(Qt::DecorationRole, request.quota);
-        widg->setData(Qt::DisplayPropertyRole, request.imageName.c_str());
+        widg->setData(Qt::DisplayPropertyRole, cop.c_str());
 
         ui->listWidget_2->addItem(widg);
     }
