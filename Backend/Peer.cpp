@@ -899,7 +899,7 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
 void Peer::setQuotaGrantedImage(string imageName, int newQuota)
 {
     int sz;
-    string codifiedPath = GrantedImages + imageName + CODED;
+    string codifiedPath = GrantedImages + imageName;
     vector<uint8_t> cod = Image::readImage(codifiedPath, sz);
     
     Image img = Image(cod);
