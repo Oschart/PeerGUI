@@ -72,14 +72,17 @@ int Peer::login(string username, string password)
             cout << "Authentication granted, token = " << content << endl;
             this->username = username;
             this->sessionToken = content;
+
+            MyData = rootDIR + username + "/MyData/";
+            MyImages = rootDIR + username + "/MyData/MyImages/";
+            PREVIEWS = rootDIR + username + "/MyData/Previews/";
+            GrantedImages = rootDIR + username + "/MyData/GrantedImages/";
+            Quota_db = rootDIR + username + "/MyData/quota_db.txt";
+
             createFolder(MyData);
             createFolder(GrantedImages);
             createFolder(MyImages);
             createFolder(PREVIEWS);
-
-            /*cacheDB(MyImages_db, myImageTitles);
-            cacheDB(GrantedImages_db, grantedImagesTitles);
-            cacheDB(Previews_db, previewsTitles);*/
 
             result = 1;
         }
@@ -197,7 +200,6 @@ int Peer::getPreviews()
 
             cout << "Image Title = " << storedImageTitle << endl;
             
-            //appendFileAndCache(Previews_db, previewsTitles, storedImageTitle);
             tempImages.push_back(path);
         }
 
@@ -255,7 +257,6 @@ int Peer::getUserPreviews(string otherpeer)
     this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
 
     cout << "Addrersssss == " << peerToAddress.first << " " <<  peerToAddress.second << endl;
-    //string args = this->sessionToken + separator + otherpeer;
     string args = "1";
     Message *toBeSent = new Message(GET_USER_PREVIEWS, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
@@ -285,42 +286,7 @@ int Peer::getUserPreviews(string otherpeer)
     }
     return res;
 }
-/*
-void Peer::getUserPreviews(string otherpeer)
-{
-    pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
-    if (peerToAddress == make_pair(0U, 0U))
-    {
-        cout << "There's no peer record with such name in the broker\n";
-        return;
-    }
-    cout << "Peer Address was received successfully, getting titles...\n";
-    this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
 
-    string args = this->username;
-    Message *toBeSent = new Message(GET_USER_PREVIEWS, stringToCharPtr(args), args.length(), (this->rpcID)++);
-    toBeSent->setMessageType(Request);
-    if (this->execute(toBeSent))
-    {
-        int rpc_id = toBeSent->getRPCId();
-        Message *received = this->rpcToMsg[rpc_id];
-        this->rpcToMsg.erase(rpc_id);
-        cout << "USER TITLES RECEIVED: \n";
-
-        string content = string((char *)received->getMessage(), received->getMessageSize());
-        vector<string> args = extractArgs(content);
-
-        for (int i = 0; i < args.size(); i++)
-            cout << args[i] << endl;
-
-        delete received;
-    }
-    else
-    {
-        cout << "Get User Previews operation timed out!\n";
-    }
-}
-*/
 int Peer::uploadImagePreview(string imageName, string imagePath)
 {
     this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
@@ -962,32 +928,7 @@ void Peer::uploadLocalImage(string path)
     string myPath = MyImages + imageName;
     Image::writeImage(path, myimg.getContent());
 
-    //appendFileAndCache(MyImages_db, myImageTitles, imageName);
 }
-
-/*
-void Peer::cacheDB(string path, set<string> &cache)
-{
-    ifstream in(path);
-    string entry;
-    while (getline(in, entry))
-    {
-        cache.insert(entry);
-    }
-}*/
-/*
-void Peer::appendFileAndCache(string path, set<string> &cache, string entry)
-{
-    if (cache.find(entry) == cache.end())
-    {
-        ofstream out(path, ios_base::app);
-        out << entry << endl;
-
-        cache.insert(entry);
-        out.close();
-    }
-}
-*/
 
 void Peer::loadReceiverQuota()
 {
