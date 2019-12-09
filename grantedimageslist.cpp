@@ -17,7 +17,9 @@ GrantedImagesList::GrantedImagesList(QWidget *parent) :
         Image img (Image::readImage((peer.GrantedImages.c_str() + filename).toStdString(), sz));
         quota = img.getQuota();
         auto nameWithoutUser = filename.toStdString();
+        cout << "Name Without User1 " << nameWithoutUser << endl;
         removeUserfromName(nameWithoutUser);
+        cout << "Name Without User2 " << nameWithoutUser << endl;
         auto item = new QListWidgetItem((nameWithoutUser + " -- " + img.getOwner().c_str() + " -- " + to_string(quota).c_str() + " views remaining").c_str());
         item->setSizeHint(QSize(item->sizeHint().width(), 50));
         item->setData(Qt::UserRole, filename);

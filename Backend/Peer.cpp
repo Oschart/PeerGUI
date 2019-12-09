@@ -882,8 +882,10 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
             if(response == "1"){
                 cout << "Quota request approved\n";
                 int quota = stoll(VectorToString(args[3]));
-                string full_image_name = addUsertoName(imageName, sender);
-                setQuotaGrantedImage(full_image_name,quota);
+                //string full_image_name = addUsertoName(imageName, sender);
+                string full_image_name = imageName;
+                receiverQuota[imageTitle][viewer] = quota;
+                setQuotaGrantedImage(full_image_name, quota);
             }
             else if(response == "0"){
                 cout << "Quota request denied\n";

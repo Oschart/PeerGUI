@@ -21,7 +21,7 @@ RequestImageDialog::~RequestImageDialog()
 void RequestImageDialog::on_buttonBox_accepted()
 {
     int quota = stoi(ui->lineEdit->text().toStdString());
-
+cout << "Image Name = " << imageName <<endl;
     int res = newImage? peer.requestImage(owner, imageName, quota) : peer.requestImageQuota(owner, imageName, quota);
     if (res == -1) QMessageBox::information (this, "Request", "An error occurred. Try again");
     else if (res == 1){
