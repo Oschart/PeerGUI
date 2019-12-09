@@ -46,4 +46,5 @@ void ViewGrantedImageDialog::on_buttonBox_accepted()
 void ViewGrantedImageDialog::on_pushButton_clicked()
 {
     RequestImageDialog* rid = new RequestImageDialog(owner, fileName, false);
+    rid->show();
 }
