@@ -18,6 +18,7 @@ Peer::Peer(char *_myHostname, int _myPort, char *_shostname, int _sport) : Serve
     argCount[ANSWER_QUOTA_REQUEST] = 4;
     argCount[ANSWER_IMAGE_REQUEST] = 3;
     argCount[GET_USER_PREVIEWS] = 1;
+    argCount[NOTIFY_VIEW] = 2;
 
     loadReceiverQuota();
 
@@ -508,6 +509,77 @@ int Peer::requestImageQuota(string otherpeer, string imageName, int quota)
     return res;
 }
 
+void Peer::notifyView(string title)
+{
+    string otherpeer = removeUserfromName(title);
+
+    pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
+    if (peerToAddress == make_pair(0U, 0U))
+    {
+        cout << "There's no peer record with such name in the broker\n";
+        return -1;
+    }
+    int res;
+    cout << "Peer Address was received successfully, requesting image quota...\n";
+    this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
+
+    string args = username + separator + title;
+    Message *toBeSent = new Message(NOTIFY_VIEW, stringToCharPtr(args), args.length(), (this->rpcID)++);
+
+    toBeSent->setMessageType(Request);
+    if (this->execute(toBeSent))
+    {
+        int rpc_id = toBeSent->getRPCId();
+        Message *received = this->rpcToMsg[rpc_id];
+        this->rpcToMsg.erase(rpc_id);
+        string content = string((char *)received->getMessage(), received->getMessageSize());
+        if (content == "1")
+        {
+            cout << "View notification sent successfully to peer\n";
+            res = 1;
+        }
+        else
+        {
+            cout << "Undefined response for view notification\n";
+            res = -1;
+        }
+
+        delete received;
+    }
+    else
+    {
+        cout << "View notification operation timed out!, will send to the broker\n";
+        toBeSent->setOperation(CACHE_MSG);
+        string content = string((char *)toBeSent->getMessage(), toBeSent->getMessageSize());
+        content = sessionToken + separator + otherpeer + separator + to_string(NOTIFY_VIEW) + separator + content;
+        toBeSent->setMessage(stringToCharPtr(content), content.length());
+        this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
+        if (this->execute(toBeSent)){
+            int rpc_id = toBeSent->getRPCId();
+            Message *received = this->rpcToMsg[rpc_id];
+            this->rpcToMsg.erase(rpc_id);
+            string content = string((char *)received->getMessage(), received->getMessageSize());
+
+            if (content == "1")
+            {
+                cout << "View notification sent successfully to broker\n";
+                res = 2;
+            }
+            else
+            {
+                cout << "Undefined response for view notification\n";
+                res = -1;
+            }
+            delete received;
+        }
+        else {
+            //timeout on the send to broker after timeout on send to peer
+            res = -1;
+        }
+    }
+    return res;
+}
+
 void Peer::setImageQuota(string otherpeer, string imageName, int quota)
 {
     pair<IP, Port> peerToAddress = this->getAddress(otherpeer);
@@ -520,6 +592,7 @@ void Peer::setImageQuota(string otherpeer, string imageName, int quota)
     cout << "Peer Address was received successfully, setting image quota...\n";
     this->udpSocket->initializeClient(peerToAddress.first, peerToAddress.second);
 
+    int res;
     string args = username + separator + imageName + separator + to_string(quota);
     Message *toBeSent = new Message(SET_QUOTA, stringToCharPtr(args), args.length(), (this->rpcID)++);
     toBeSent->setMessageType(Request);
@@ -532,24 +605,49 @@ void Peer::setImageQuota(string otherpeer, string imageName, int quota)
 
         if (content == "1")
         {
-            cout << "Setting image quota request sent successfully\n";
+            cout << "Setting image quota request sent successfully to peer\n";
+            res = 1;
         }
         else
         {
             cout << "Undefined response for Setting image quota request\n";
+            res = -1;
         }
 
         delete received;
     }
-    else
+     else
     {
-        cout << "Setting Image Quota operation timed out!, will send to the broker\n";
+        cout << "View notification operation timed out!, will send to the broker\n";
+        toBeSent->setOperation(CACHE_MSG);
         string content = string((char *)toBeSent->getMessage(), toBeSent->getMessageSize());
         content = sessionToken + separator + otherpeer + separator + to_string(SET_QUOTA) + separator + content;
-        toBeSent->setMessage(stringToCharPtr(content), content.length());
-        this->udpSocket->initializeClient(BROKER_IP, BROKER_PORT);
-        this->execute(toBeSent);
+        toBeSent->setMessagializeCliente(stringToCharPtr(content), content.length());
+        this->udpSocket->init(BROKER_IP, BROKER_PORT);
+        if (this->execute(toBeSent)){
+            int rpc_id = toBeSent->getRPCId();
+            Message *received = this->rpcToMsg[rpc_id];
+            this->rpcToMsg.erase(rpc_id);
+            string content = string((char *)received->getMessage(), received->getMessageSize());
+
+            if (content == "1")
+            {
+                cout << "View notification sent successfully to broker\n";
+                res = 2;
+            }
+            else
+            {
+                cout << "Undefined response for view notification\n";
+                res = -1;
+            }
+            delete received;
+        }
+        else {
+            //timeout on the send to broker after timeout on send to peer
+            res = -1;
+        }
     }
+    return res;
 }
 
 
@@ -785,26 +883,6 @@ Message *Peer::doOperation(Message *_received, IP user_ip, Port user_port)
     response->setMessageType(Reply);
     response->setMessage(stringToCharPtr(msgBody), msgBody.size());
     return response;
-}
-
-void Peer::viewGrantedImage(string title)
-{
-    int sz;
-    string codifiedPath = GrantedImages + title + CODED;
-    vector<uint8_t> cod = Image::readImage(codifiedPath, sz);
-    
-    Image img = Image(cod);
-
-    string contentPath = GrantedImages + title;
-    // Create a temporary non-codified image
-    Image::writeImage(contentPath, img.getContent());
-    tempImages.push_back(contentPath);
-
-    img = Image(DEF_IMG(sz), img.getContent(), img.getOwner(), img.getQuota() - 1);
-
-    // Write back codified image
-    Image::writeImage(codifiedPath, img.getCodified());
-
 }
 
 void Peer::setQuotaGrantedImage(string imageName, int newQuota)

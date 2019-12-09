@@ -16,7 +16,7 @@
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>150</x>
+     <x>220</x>
      <y>370</y>
      <width>89</width>
      <height>25</height>
@@ -42,7 +42,7 @@
   <widget class="QPushButton" name="pushButton_2">
    <property name="geometry">
     <rect>
-     <x>330</x>
+     <x>40</x>
      <y>370</y>
      <width>121</width>
      <height>25</height>
@@ -50,6 +50,19 @@
    </property>
    <property name="text">
     <string>Upload Preview</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_3">
+   <property name="geometry">
+    <rect>
+     <x>358</x>
+     <y>370</y>
+     <width>231</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Who was granted this image?</string>
    </property>
   </widget>
  </widget>
