@@ -21,6 +21,7 @@ Peer::Peer(char *_myHostname, int _myPort, char *_shostname, int _sport) : Serve
     argCount[NOTIFY_VIEW] = 2;
 
     loadReceiverQuota();
+    
 
 }
 
@@ -85,6 +86,8 @@ int Peer::login(string username, string password)
             createFolder(GrantedImages);
             createFolder(MyImages);
             createFolder(PREVIEWS);
+
+            retrieveUserPreviews();
 
             result = 1;
         }
@@ -230,7 +233,8 @@ int Peer::retrieveUserPreviews()
         int rpc_id = toBeSent->getRPCId();
         Message *received = this->rpcToMsg[rpc_id];
         this->rpcToMsg.erase(rpc_id);
-        cout << "PREVIEWS RECEIVED\n";
+        cout << "Restored Images RECEIVED\n";
+        
         vector<uint8_t> flatArgs = Image::charPtrToVector((char *)received->getMessage(), received->getMessageSize());
 
         vector<Image> previews = extractImages(flatArgs);
@@ -238,12 +242,11 @@ int Peer::retrieveUserPreviews()
         for (int i = 0; i < previews.size(); i++)
         {
             cout << "OWNER ====> " << previews[i].getOwner() << endl;
-            string storedImageTitle = addUsertoName(previews[i].getTitle(), previews[i].getOwner());
 
-            string path = PREVIEWS + storedImageTitle;
+            string path = MyImages + previews[i].getTitle();
             Image::writeImage(path, previews[i].getContent());
 
-            cout << "Image Title = " << storedImageTitle << endl;
+            //cout << "Image Title = " << storedImageTitle << endl;
 
         }
 
