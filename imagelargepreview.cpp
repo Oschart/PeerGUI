@@ -1,5 +1,6 @@
 #include "imagelargepreview.h"
 #include "ui_imagelargepreview.h"
+#include "granteelist.h"
 #include <iostream>
 #include <QFileInfo>
 #include <QMessageBox>
@@ -36,4 +37,11 @@ void ImageLargePreview::on_pushButton_2_clicked()
         if (res == -1)  QMessageBox::information (this, "Upload", "Cannot connect to server");
 
 
+}
+
+void ImageLargePreview::on_pushButton_3_clicked()
+{
+    std::string imageName = QFileInfo(imagePath.c_str()).fileName().toUtf8().constData();
+    GranteeList * gl = new GranteeList(imageName);
+    gl->show();
 }

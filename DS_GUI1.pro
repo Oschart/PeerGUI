@@ -36,7 +36,9 @@ SOURCES += \
     approverequestdialog.cpp \
     grantedimageslist.cpp \
     viewgrantedimagedialog.cpp \
-    grantedimagepreview.cpp
+    grantedimagepreview.cpp \
+    granteelist.cpp \
+    offernewquotadialog.cpp
 
 HEADERS += \
     Backend/Image.h \
@@ -59,7 +61,9 @@ HEADERS += \
     approverequestdialog.h \
     grantedimageslist.h \
     viewgrantedimagedialog.h \
-    grantedimagepreview.h
+    grantedimagepreview.h \
+    granteelist.h \
+    offernewquotadialog.h
 
 FORMS += \
     browser.ui \
@@ -73,7 +77,9 @@ FORMS += \
     approverequestdialog.ui \
     grantedimageslist.ui \
     viewgrantedimagedialog.ui \
-    grantedimagepreview.ui
+    grantedimagepreview.ui \
+    granteelist.ui \
+    offernewquotadialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
