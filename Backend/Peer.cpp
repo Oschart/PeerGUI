@@ -87,9 +87,6 @@ int Peer::login(string username, string password)
             createFolder(MyImages);
             createFolder(PREVIEWS);
 
-            //retrieveUserPreviews();
-            //retrievePreviouslySent();
-
             result = 1;
         }
 
