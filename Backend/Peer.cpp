@@ -584,7 +584,7 @@ int Peer::setImageQuota(string otherpeer, string imageName, int quota)
     if (peerToAddress == make_pair(0U, 0U))
     {
         cout << "There's no peer record with such name in the broker\n";
-        return;
+        return -1;
     }
 
     cout << "Peer Address was received successfully, setting image quota...\n";
