@@ -45,6 +45,7 @@ enum opType
     GET_ALL_USERS = 5,
     CACHE_MSG = 6,
     NOTIFY_VIEW = 7,
+    
     //broker and peer
     ANSWER_QUOTA_REQUEST,
     ANSWER_IMAGE_REQUEST,
@@ -54,6 +55,7 @@ enum opType
     REQUEST_IMAGE,
     REQUEST_QUOTA,
     SET_QUOTA,
+    RETRIEVE_USER_PREVIEWS = 55,
  
 };
 
@@ -82,7 +84,7 @@ public:
     int signup(string username, string password);
     int getPreviews();
     int getUserPreviews(string otherpeer);
-    int retrieveUserPreviews(string otherpeer);
+    int retrieveUserPreviews();
 
     int getAllUsers(vector<string> &usernames);
 
